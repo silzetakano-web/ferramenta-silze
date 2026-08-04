@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise de Perfil do Investidor | Na Conta da Silze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Georgia&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --azul:#404D5D;
+    --azul-escuro:#2E3742;
+    --creme:#F5F0E8;
+    --dourado:#C9A84C;
+    --dourado-claro:#E4CE8F;
+    --texto:#2A2E33;
+    --erro:#B4553F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--creme);
+    font-family:'Poppins',sans-serif;
+    color:var(--texto);
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 80px;
+    line-height:1.5;
+  }
+  .app{width:100%;max-width:640px;}
+  .brandbar{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .brandbar .logo{font-family:Georgia,serif;font-size:20px;color:var(--azul);letter-spacing:.3px;}
+  .brandbar .logo b{color:var(--dourado);}
+  .brandbar .tag{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--azul);opacity:.6;}
+
+  .card{
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(64,77,93,0.12);
+    overflow:hidden;
+  }
+  .card-header{
+    background:var(--azul);
+    color:var(--creme);
+    padding:28px 32px 22px;
+  }
+  .card-header h1{
+    font-family:Georgia,serif;
+    font-size:22px;
+    margin:0 0 6px;
+    font-weight:400;
+  }
+  .card-header p{margin:0;font-size:13px;opacity:.8;}
+
+  .progress-track{
+    height:5px;background:rgba(255,255,255,.18);
+    border-radius:3px;margin-top:18px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:var(--dourado);
+    transition:width .35s ease;
+  }
+
+  .card-body{padding:32px;}
+  .step-eyebrow{
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--dourado);font-weight:600;margin-bottom:8px;
+  }
+  .question{
+    font-size:18px;color:var(--azul-escuro);margin:0 0 20px;font-weight:500;
+  }
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;margin-bottom:6px;color:var(--azul);font-weight:500;}
+  .field input[type=text],.field input[type=email],.field input[type=number]{
+    width:100%;padding:12px 14px;border:1.5px solid #E2DCCF;border-radius:8px;
+    font-family:'Poppins',sans-serif;font-size:14px;background:var(--creme);
+  }
+  .field input:focus{outline:none;border-color:var(--dourado);}
+
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .opt{
+    border:1.5px solid #E2DCCF;border-radius:10px;padding:14px 16px;
+    cursor:pointer;font-size:14.5px;transition:.15s;background:#fff;
+  }
+  .opt:hover{border-color:var(--dourado-claro);background:#FBF8F2;}
+  .opt.selected{border-color:var(--dourado);background:#FBF3DD;font-weight:600;color:var(--azul-escuro);}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:28px;gap:12px;}
+  button{
+    font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;
+    border:none;border-radius:8px;padding:13px 24px;cursor:pointer;transition:.15s;
+  }
+  .btn-primary{background:var(--azul);color:#fff;}
+  .btn-primary:hover{background:var(--azul-escuro);}
+  .btn-primary:disabled{background:#C9C2B2;cursor:not-allowed;}
+  .btn-ghost{background:transparent;color:var(--azul);border:1.5px solid #E2DCCF;}
+  .btn-ghost:hover{border-color:var(--azul);}
+
+  .hidden{display:none;}
+
+  /* Results */
+  .result-badge{
+    text-align:center;padding:6px 0 4px;
+  }
+  .result-badge .label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dourado);}
+  .result-badge h2{font-family:Georgia,serif;font-size:30px;color:var(--azul-escuro);margin:6px 0 2px;}
+  .result-badge p{font-size:14px;color:var(--azul);opacity:.75;margin:0;}
+
+  .gauge{margin:26px 0 8px;}
+  .gauge-track{
+    display:flex;height:14px;border-radius:7px;overflow:hidden;position:relative;
+  }
+  .gauge-track div{flex:1;}
+  .zone-1{background:#8FAE9C;}
+  .zone-2{background:var(--dourado-claro);}
+  .zone-3{background:var(--dourado);}
+  .zone-4{background:var(--erro);}
+  .gauge-marker{
+    position:absolute;top:-6px;width:2px;height:26px;background:var(--azul-escuro);
+    transform:translateX(-1px);
+  }
+  .gauge-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--azul);opacity:.65;margin-top:6px;}
+
+  .block-title{
+    font-family:Georgia,serif;font-size:15px;color:var(--azul-escuro);
+    margin:26px 0 10px;border-bottom:1px solid #EDE7D8;padding-bottom:6px;
+  }
+  ul.chars{margin:0;padding-left:18px;font-size:13.5px;}
+  ul.chars li{margin-bottom:5px;}
+
+  .alloc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;}
+  .alloc-row .name{width:150px;flex-shrink:0;color:var(--azul-escuro);font-weight:600;}
+  .alloc-bar{flex:1;height:9px;background:#EDE7D8;border-radius:5px;overflow:hidden;}
+  .alloc-bar div{height:100%;background:var(--dourado);}
+  .alloc-row .pct{width:56px;text-align:right;font-weight:600;color:var(--azul);flex-shrink:0;}
+  .alloc-sub-row{display:flex;align-items:center;gap:10px;margin:0 0 6px 20px;font-size:12px;}
+  .alloc-sub-row .name{width:130px;flex-shrink:0;color:var(--azul);opacity:.8;font-weight:400;}
+  .alloc-sub-bar{flex:1;height:6px;background:#EDE7D8;border-radius:4px;overflow:hidden;}
+  .alloc-sub-bar div{height:100%;background:var(--dourado-claro);}
+  .alloc-sub-row .pct{width:56px;text-align:right;color:var(--azul);opacity:.8;font-weight:500;flex-shrink:0;}
+  .strategy-note{
+    font-size:12.5px;color:var(--azul-escuro);background:var(--creme);
+    border-left:3px solid var(--dourado);padding:12px 14px;border-radius:0 8px 8px 0;
+    margin-top:14px;line-height:1.55;
+  }
+
+  .disclaimer{
+    font-size:11px;color:var(--azul);opacity:.6;margin-top:22px;line-height:1.5;
+  }
+  .cta{
+    margin-top:22px;background:var(--azul);color:var(--creme);border-radius:10px;
+    padding:16px 18px;font-size:13px;text-align:center;
+  }
+  .cta b{color:var(--dourado-claro);}
+
+  .result-actions{display:flex;gap:10px;margin-top:22px;}
+  .result-actions button{flex:1;}
+
+  @media(max-width:480px){
+    .card-body{padding:22px;}
+    .card-header{padding:22px 22px 18px;}
+    .alloc-row .name{width:110px;font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brandbar">
+    <div class="logo">Na Conta da <b>Silze</b></div>
+    <div class="tag">Inteligência Financeira</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1 id="headerTitle">Análise do Perfil do Investidor</h1>
+      <p id="headerSub">Leva cerca de 4 minutos. Responda com sinceridade — não existe resposta certa.</p>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="card-body" id="cardBody"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- CONFIGURAÇÃO ---------- */
+/* Cole aqui a URL do seu Web App do Google Apps Script (veja instruções de deploy). */
+const CONFIG = {
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwGhSO0A8bWkIxEpe130sXuwwIje46ZGy9z2XS37QWaHwc0bDmVo9cFntgTcyGkQPrB/exec',
+};
+
+/* ---------- DADOS ---------- */
+const QUESTIONS = [
+  {id:'horizonte', peso:1, texto:'Em quanto tempo você imagina precisar resgatar a maior parte desse dinheiro?',
+    opcoes:[
+      {t:'Em até 1 ano', p:1},
+      {t:'Entre 1 e 3 anos', p:2},
+      {t:'Entre 3 e 7 anos', p:3},
+      {t:'Acima de 7 anos', p:4},
+    ]},
+  {id:'liquidez', peso:1, texto:'Se surgisse uma necessidade inesperada, em quanto tempo você precisaria ter acesso a esse valor?',
+    opcoes:[
+      {t:'Imediatamente, é minha reserva principal', p:1},
+      {t:'Em poucos dias', p:2},
+      {t:'Em alguns meses, não é minha única reserva', p:3},
+      {t:'Não tenho pressa, tenho outras reservas', p:4},
+    ]},
+  {id:'reserva', peso:1, texto:'Você já possui uma reserva de emergência separada desse valor que pretende investir?',
+    opcoes:[
+      {t:'Não tenho reserva de emergência', p:1},
+      {t:'Tenho, mas cobre menos de 3 meses de despesas', p:2},
+      {t:'Tenho, cobre de 3 a 6 meses de despesas', p:3},
+      {t:'Tenho, cobre mais de 6 meses de despesas', p:4},
+    ]},
+  {id:'renda', peso:1, texto:'Como você descreveria a estabilidade da sua fonte de renda atual?',
+    opcoes:[
+      {t:'Instável / variável mês a mês', p:1},
+      {t:'Razoavelmente previsível', p:2},
+      {t:'Estável, com algum crescimento', p:3},
+      {t:'Muito estável, múltiplas fontes', p:4},
+    ]},
+  {id:'conhecimento', peso:1, texto:'Como você avalia seu conhecimento sobre produtos de investimento?',
+    opcoes:[
+      {t:'Básico — conheço poupança e pouco mais', p:1},
+      {t:'Intermediário — conheço renda fixa (CDB, Tesouro)', p:2},
+      {t:'Avançado — já invisto também em fundos e ações', p:3},
+      {t:'Aprofundado — entendo derivativos, câmbio, alternativos', p:4},
+    ]},
+  {id:'experiencia', peso:1, texto:'Você já investiu em produtos de renda variável (ações, fundos multimercado, etc.)?',
+    opcoes:[
+      {t:'Nunca investi', p:1},
+      {t:'Já investi, mas com desconforto', p:2},
+      {t:'Já investi e me senti confortável', p:3},
+      {t:'Invisto regularmente há anos', p:4},
+    ]},
+  {id:'objetivo', peso:1, texto:'Qual o principal propósito para esse dinheiro?',
+    opcoes:[
+      {t:'Preservar o que já tenho', p:1},
+      {t:'Superar a inflação com segurança', p:2},
+      {t:'Crescer patrimônio no médio prazo', p:3},
+      {t:'Maximizar retorno no longo prazo', p:4},
+    ]},
+  {id:'percentual', peso:1, texto:'Que parcela do seu patrimônio total esse valor representa?',
+    opcoes:[
+      {t:'Praticamente tudo que tenho', p:1},
+      {t:'A maior parte do que tenho', p:2},
+      {t:'Uma parte, tenho outros investimentos', p:3},
+      {t:'Uma pequena parte do meu patrimônio', p:4},
+    ]},
+  {id:'queda10', peso:2, texto:'Se, um mês após investir, sua carteira caísse 10%, o que você faria?',
+    opcoes:[
+      {t:'Resgataria tudo imediatamente', p:1},
+      {t:'Ficaria muito desconfortável, mas esperaria um pouco', p:2},
+      {t:'Entenderia como parte do processo e manteria', p:3},
+      {t:'Veria como oportunidade e consideraria aportar mais', p:4},
+    ]},
+  {id:'queda20', peso:2, texto:'E se essa queda fosse de 20% em poucos meses?',
+    opcoes:[
+      {t:'Resgataria tudo, não suportaria a perda', p:1},
+      {t:'Resgataria parte para reduzir o risco', p:2},
+      {t:'Manteria a estratégia original', p:3},
+      {t:'Manteria e aproveitaria para comprar mais', p:4},
+    ]},
+  {id:'cenario', peso:2, texto:'Diante de uma crise econômica com notícias muito negativas na mídia, sua reação mais provável seria:',
+    opcoes:[
+      {t:'Tirar todo o dinheiro do mercado', p:1},
+      {t:'Parar de acompanhar e ficar ansiosa(o)', p:2},
+      {t:'Revisar a carteira com calma, sem mudanças bruscas', p:3},
+      {t:'Buscar entender se há oportunidades na crise', p:4},
+    ]},
+];
+
+const PROFILES = {
+  conservador:{
+    nome:'Conservador',
+    resumo:'Prioriza segurança e previsibilidade acima de tudo.',
+    caracteristicas:[
+      'Baixa tolerância a oscilações de curto prazo',
+      'Prioriza liquidez e preservação do capital',
+      'Prefere resultados previsíveis a ganhos potenciais maiores',
+    ],
+    nota:'Concentração em pós-fixado para reserva e previsibilidade, com uma parcela em IPCA+ curto/médio para não perder poder de compra. Prefixado apenas residual, e só faz sentido se a taxa contratada estiver claramente favorável no momento da aplicação.',
+    alocacao:[
+      {n:'Renda Fixa', v:85, sub:[
+        {n:'Pós-fixado (Selic / CDI)', v:55},
+        {n:'IPCA+', v:20},
+        {n:'Prefixado', v:10},
+      ]},
+      {n:'Renda Variável', v:5},
+      {n:'Multimercado', v:5},
+      {n:'Internacional', v:3},
+      {n:'Alternativos', v:2},
+    ]
+  },
+  moderado:{
+    nome:'Moderado',
+    resumo:'Aceita alguma oscilação em troca de retorno acima da inflação no médio prazo.',
+    caracteristicas:[
+      'Tolera oscilações moderadas se o horizonte permitir',
+      'Busca equilíbrio entre segurança e crescimento',
+      'Já tem alguma familiaridade com renda variável',
+    ],
+    nota:'Renda fixa ainda é a base, mas dividida entre os três indexadores para captar diferentes momentos do ciclo de juros. A parcela em renda variável, multimercado e internacional já é relevante para buscar crescimento real no médio prazo.',
+    alocacao:[
+      {n:'Renda Fixa', v:60, sub:[
+        {n:'Pós-fixado (Selic / CDI)', v:30},
+        {n:'IPCA+', v:20},
+        {n:'Prefixado', v:10},
+      ]},
+      {n:'Renda Variável', v:15},
+      {n:'Multimercado', v:12},
+      {n:'Internacional', v:8},
+      {n:'Alternativos', v:5},
+    ]
+  },
+  moderado_arrojado:{
+    nome:'Moderado-Arrojado',
+    resumo:'Confortável com volatilidade relevante em busca de crescimento consistente no longo prazo.',
+    caracteristicas:[
+      'Tolera quedas de dois dígitos sem alterar a estratégia',
+      'Horizonte de investimento longo',
+      'Já possui experiência prática com renda variável',
+    ],
+    nota:'Renda fixa passa a ter papel de estabilizador da carteira, não de motor de retorno. IPCA+ longo ganha peso pelo horizonte estendido. Renda variável, multimercado e internacional somam mais da metade da carteira.',
+    alocacao:[
+      {n:'Renda Fixa', v:35, sub:[
+        {n:'Pós-fixado (Selic / CDI)', v:12},
+        {n:'IPCA+', v:15},
+        {n:'Prefixado', v:8},
+      ]},
+      {n:'Renda Variável', v:28},
+      {n:'Multimercado', v:15},
+      {n:'Internacional', v:15},
+      {n:'Alternativos', v:7},
+    ]
+  },
+  arrojado:{
+    nome:'Arrojado',
+    resumo:'Busca maximizar retorno no longo prazo e aceita alta volatilidade como parte do processo.',
+    caracteristicas:[
+      'Alta tolerância a oscilações e perdas temporárias',
+      'Visão de longo prazo bem consolidada',
+      'Enxerga momentos de crise como oportunidade',
+    ],
+    nota:'Renda fixa reduzida ao mínimo para liquidez e oportunidades táticas. O grosso da carteira busca crescimento via renda variável, multimercado, exposição internacional e alternativos, aceitando maior volatilidade no caminho.',
+    alocacao:[
+      {n:'Renda Fixa', v:15, sub:[
+        {n:'Pós-fixado (Selic / CDI)', v:5},
+        {n:'IPCA+', v:6},
+        {n:'Prefixado', v:4},
+      ]},
+      {n:'Renda Variável', v:38},
+      {n:'Multimercado', v:17},
+      {n:'Internacional', v:20},
+      {n:'Alternativos', v:10},
+    ]
+  },
+};
+
+const MAXSCORE = QUESTIONS.reduce((s,q)=>s+q.peso*4,0);
+const MINSCORE = QUESTIONS.reduce((s,q)=>s+q.peso*1,0);
+function classify(score){
+  const range = MAXSCORE-MINSCORE;
+  const cut1 = MINSCORE + range*0.30;
+  const cut2 = MINSCORE + range*0.58;
+  const cut3 = MINSCORE + range*0.80;
+  if(score<=cut1) return 'conservador';
+  if(score<=cut2) return 'moderado';
+  if(score<=cut3) return 'moderado_arrojado';
+  return 'arrojado';
+}
+
+/* ---------- ESTADO ---------- */
+let step = 0; // 0 = dados pessoais, 1..N = perguntas, N+1 = resultado
+const totalSteps = QUESTIONS.length + 2;
+let dados = {nome:'', email:''};
+let respostas = {};
+
+const cardBody = document.getElementById('cardBody');
+const progressFill = document.getElementById('progressFill');
+const headerTitle = document.getElementById('headerTitle');
+const headerSub = document.getElementById('headerSub');
+
+function updateProgress(){
+  progressFill.style.width = Math.round((step/totalSteps)*100)+'%';
+}
+
+function render(){
+  updateProgress();
+  if(step===0){ renderIntro(); }
+  else if(step<=QUESTIONS.length){ renderQuestion(step-1); }
+  else { renderResult(); }
+}
+
+function renderIntro(){
+  headerTitle.textContent = 'Análise do Perfil do Investidor';
+  headerSub.textContent = 'Leva cerca de 4 minutos. Responda com sinceridade — não existe resposta certa.';
+  cardBody.innerHTML = `
+    <div class="step-eyebrow">Antes de começar</div>
+    <div class="question">Para quem preparamos este relatório?</div>
+    <div class="field">
+      <label>Nome completo</label>
+      <input type="text" id="inpNome" placeholder="Seu nome" value="${dados.nome}">
+    </div>
+    <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="inpEmail" placeholder="seu@email.com" value="${dados.email}">
+    </div>
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" onclick="goNext()">Começar</button>
+    </div>
+  `;
+}
+
+function renderQuestion(idx){
+  const q = QUESTIONS[idx];
+  headerTitle.textContent = 'Análise do Perfil do Investidor';
+  headerSub.textContent = `Pergunta ${idx+1} de ${QUESTIONS.length}`;
+  const selected = respostas[q.id];
+  cardBody.innerHTML = `
+    <div class="step-eyebrow">Pergunta ${idx+1} de ${QUESTIONS.length}</div>
+    <div class="question">${q.texto}</div>
+    <div class="options">
+      ${q.opcoes.map((o,i)=>`
+        <div class="opt ${selected===i?'selected':''}" onclick="selectOption('${q.id}',${i})">${o.t}</div>
+      `).join('')}
+    </div>
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goBack()">Voltar</button>
+      <button class="btn-primary" id="btnNext" onclick="goNext()" ${selected===undefined?'disabled':''}>Continuar</button>
+    </div>
+  `;
+}
+
+function selectOption(qid, idx){
+  respostas[qid] = idx;
+  renderQuestion(step-1);
+}
+
+function goNext(){
+  if(step===0){
+    dados.nome = document.getElementById('inpNome').value.trim();
+    dados.email = document.getElementById('inpEmail').value.trim();
+    if(!dados.nome){ alert('Por favor, informe seu nome.'); return; }
+  }
+  step++;
+  render();
+}
+function goBack(){
+  if(step===0) return;
+  step--;
+  render();
+}
+
+function computeScore(){
+  let score = 0;
+  QUESTIONS.forEach(q=>{
+    const idx = respostas[q.id];
+    const pts = q.opcoes[idx].p;
+    score += pts*q.peso;
+  });
+  return score;
+}
+
+function renderResult(){
+  headerTitle.textContent = 'Seu Relatório de Perfil';
+  headerSub.textContent = dados.nome;
+  const score = computeScore();
+  const key = classify(score);
+  const profile = PROFILES[key];
+  const pct = ((score-MINSCORE)/(MAXSCORE-MINSCORE))*100;
+
+  cardBody.innerHTML = `
+    <div class="result-badge">
+      <div class="label">Perfil identificado</div>
+      <h2>${profile.nome}</h2>
+      <p>${profile.resumo}</p>
+    </div>
+
+    <div class="gauge">
+      <div class="gauge-track">
+        <div class="zone-1"></div><div class="zone-2"></div><div class="zone-3"></div><div class="zone-4"></div>
+        <div class="gauge-marker" style="left:${pct}%"></div>
+      </div>
+      <div class="gauge-labels"><span>Conservador</span><span>Moderado</span><span>Mod-Arrojado</span><span>Arrojado</span></div>
+    </div>
+
+    <div class="block-title">Características do seu perfil</div>
+    <ul class="chars">
+      ${profile.caracteristicas.map(c=>`<li>${c}</li>`).join('')}
+    </ul>
+
+    <div class="block-title">Sugestão estruturada de alocação</div>
+    ${profile.alocacao.map(a=>`
+      <div class="alloc-row">
+        <div class="name">${a.n}</div>
+        <div class="alloc-bar"><div style="width:${a.v}%"></div></div>
+        <div class="pct">${a.v}%</div>
+      </div>
+      ${a.sub ? a.sub.map(s=>`
+        <div class="alloc-sub-row">
+          <div class="name">${s.n}</div>
+          <div class="alloc-sub-bar"><div style="width:${s.v}%"></div></div>
+          <div class="pct">${s.v}%</div>
+        </div>
+      `).join('') : ''}
+    `).join('')}
+    <div class="strategy-note"><b>Racional da estratégia:</b> ${profile.nota}</div>
+
+    <div class="cta">Este é apenas o ponto de partida. <b>A Silze simplifica e você multiplica</b> — vamos conversar sobre como aplicar isso na sua realidade.</div>
+
+    <div class="disclaimer">
+      Este relatório apresenta uma alocação estratégica de referência por classe de ativo e indexador — não é uma recomendação de produtos específicos. A divisão tática dentro da renda fixa (peso de pós-fixado, prefixado e IPCA+) deve ser ajustada conforme o momento do ciclo de juros. A classificação de perfil deve ser revisada periodicamente e é parte do processo de adequação (suitability) previsto na Resolução CVM 30/2021.
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-ghost" onclick="goBackToStart()">Refazer</button>
+      <button class="btn-primary" onclick="downloadPDF()">Baixar relatório em PDF</button>
+    </div>
+    <p id="sendStatus" style="font-size:12px;color:var(--azul);opacity:.7;margin-top:14px;text-align:center;"></p>
+  `;
+
+  sendReportByEmail(profile, score);
+}
+
+function goBackToStart(){
+  step=0; respostas={}; render();
+}
+
+function buildPDF(profile){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const azul = [64,77,93];
+  const dourado = [201,168,76];
+
+  doc.setFillColor(...azul);
+  doc.rect(0,0,210,32,'F');
+  doc.setTextColor(245,240,232);
+  doc.setFont('times','normal');
+  doc.setFontSize(18);
+  doc.text('Na Conta da Silze', 15, 15);
+  doc.setFontSize(10);
+  doc.text('Análise do Perfil do Investidor', 15, 23);
+
+  doc.setTextColor(42,46,51);
+  doc.setFontSize(11);
+  doc.text(`Nome: ${dados.nome}`, 15, 44);
+  doc.text(`E-mail: ${dados.email || '-'}`, 15, 51);
+  doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 15, 58);
+
+  doc.setDrawColor(...dourado);
+  doc.setLineWidth(0.5);
+  doc.line(15, 64, 195, 64);
+
+  doc.setFont('times','normal');
+  doc.setFontSize(16);
+  doc.setTextColor(...azul);
+  doc.text(`Perfil identificado: ${profile.nome}`, 15, 76);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11);
+  doc.setTextColor(42,46,51);
+  doc.text(doc.splitTextToSize(profile.resumo, 175), 15, 85);
+
+  let y = 100;
+  doc.setFont('helvetica','bold');
+  doc.text('Características do perfil:', 15, y);
+  doc.setFont('helvetica','normal');
+  y += 7;
+  profile.caracteristicas.forEach(c=>{
+    doc.text('• '+c, 18, y);
+    y += 7;
+  });
+
+  y += 5;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...azul);
+  doc.text('Sugestão estruturada de alocação:', 15, y);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(42,42,42);
+  y += 8;
+  profile.alocacao.forEach(a=>{
+    if(y>255){ doc.addPage(); y=20; }
+    doc.setFont('helvetica','bold');
+    doc.text(`${a.n}`, 18, y);
+    doc.text(`${a.v}%`, 180, y, {align:'right'});
+    doc.setDrawColor(230,225,210);
+    doc.line(18, y+2, 180, y+2);
+    doc.setFillColor(...dourado);
+    doc.rect(18, y+2, (162*a.v/100), 1.5, 'F');
+    y += 9;
+    if(a.sub){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(9.5);
+      a.sub.forEach(s=>{
+        if(y>255){ doc.addPage(); y=20; }
+        doc.text(`${s.n}`, 22, y);
+        doc.text(`${s.v}%`, 180, y, {align:'right'});
+        doc.setDrawColor(238,233,220);
+        doc.line(22, y+1.5, 180, y+1.5);
+        doc.setFillColor(228,206,143);
+        doc.rect(22, y+1.5, (158*s.v/100), 1, 'F');
+        y += 6.5;
+      });
+      doc.setFontSize(11);
+      y += 2;
+    }
+  });
+
+  if(y>250){ doc.addPage(); y=20; }
+  y += 4;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...azul);
+  doc.text('Racional da estratégia:', 15, y);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.5);
+  doc.setTextColor(42,42,42);
+  y += 6;
+  doc.text(doc.splitTextToSize(profile.nota, 175), 15, y);
+  y += doc.splitTextToSize(profile.nota, 175).length*4.5 + 8;
+
+  if(y>255){ doc.addPage(); y=20; }
+  doc.setFontSize(8.5);
+  doc.setTextColor(120,120,120);
+  doc.text(doc.splitTextToSize('Este relatório apresenta uma alocação estratégica de referência por classe de ativo e indexador, não uma recomendação de produtos específicos. A divisão tática dentro da renda fixa deve ser ajustada conforme o momento do ciclo de juros. A classificação de perfil deve ser revisada periodicamente e é parte do processo de adequação (suitability) previsto na Resolução CVM 30/2021.', 175), 15, y);
+
+  doc.setFontSize(9);
+  doc.setTextColor(...azul);
+  doc.text('Siga @silzetakano e continue aprendendo a multiplicar seu dinheiro com propósito', 15, 285);
+
+  return doc;
+}
+
+function downloadPDF(){
+  const score = computeScore();
+  const key = classify(score);
+  const profile = PROFILES[key];
+  const doc = buildPDF(profile);
+  doc.save(`perfil-investidor-${dados.nome.replace(/\s+/g,'-').toLowerCase()}.pdf`);
+}
+
+function sendReportByEmail(profile, score){
+  const statusEl = document.getElementById('sendStatus');
+  if(!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.indexOf('COLE_AQUI')>=0){
+    if(statusEl) statusEl.textContent = '';
+    return;
+  }
+  if(statusEl) statusEl.textContent = 'Enviando relatório por e-mail...';
+
+  const doc = buildPDF(profile);
+  const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+  fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({
+      nome: dados.nome,
+      email: dados.email,
+      perfil: profile.nome,
+      score: score,
+      pdfBase64: pdfBase64,
+    })
+  }).then(()=>{
+    if(statusEl) statusEl.textContent = 'Relatório enviado por e-mail ✓';
+  }).catch(()=>{
+    if(statusEl) statusEl.textContent = 'Não foi possível enviar automaticamente — use o botão de download acima.';
+  });
+}
+
+render();
+</script>
+</body>
+</html>
