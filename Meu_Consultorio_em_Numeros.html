@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Consultório em Números | Na Conta da Silze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5F0E8;
+    --card:#FFFFFF;
+    --ink:#2C3542;
+    --petroleo:#404D5D;
+    --gold:#C9A84C;
+    --gold-soft:#F3E9CC;
+    --line:#E2D8C3;
+    --danger:#A6483A;
+    --ok:#4B6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Poppins',sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3{font-family:Georgia,'Times New Roman',serif; margin:0; color:var(--petroleo);}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px 80px;}
+
+  header.top{background:var(--petroleo); color:var(--cream); padding:36px 20px 90px;}
+  header.top .wrap{padding:0;}
+  header.top .eyebrow{color:var(--gold); font-size:.85rem; margin-bottom:6px;}
+  header.top h1{color:var(--cream); font-size:2rem; max-width:640px;}
+  header.top p{color:#D9DEE6; max-width:600px; font-size:.98rem;}
+
+  .summary{max-width:1100px; margin:-60px auto 40px; padding:0 20px;}
+  .summary-grid{
+    background:var(--card); border-radius:10px;
+    box-shadow:0 12px 30px rgba(44,53,66,.15);
+    display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line);
+  }
+  .summary-grid .cell{padding:20px 18px; border-right:1px solid var(--line);}
+  .summary-grid .cell:last-child{border-right:none;}
+  .summary-grid .cell .label{font-size:.78rem;color:#6B7686;margin-bottom:6px;}
+  .summary-grid .cell .value{font-family:Georgia,serif;font-size:1.45rem;color:var(--petroleo);font-weight:700;}
+  .summary-grid .cell.highlight .value{color:var(--gold);}
+  @media(max-width:800px){
+    .summary-grid{grid-template-columns:repeat(2,1fr);}
+    .summary-grid .cell{border-bottom:1px solid var(--line);}
+  }
+
+  section.step{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:28px 30px; margin-bottom:22px;}
+  .step-head{display:flex; align-items:baseline; gap:14px; margin-bottom:18px; border-bottom:1px solid var(--line); padding-bottom:14px;}
+  .step-head .num{font-family:Georgia,serif; color:var(--gold); font-size:1.4rem; font-weight:700; min-width:34px;}
+  .step-head h2{font-size:1.15rem;}
+  .step-body{display:grid; grid-template-columns:1.1fr .9fr; gap:28px;}
+  @media(max-width:760px){.step-body{grid-template-columns:1fr;}}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:.85rem; margin-bottom:6px; color:var(--ink);}
+  .field input[type=number], .field input[type=text], .field select{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:6px;
+    background:var(--gold-soft); font-family:'Poppins',sans-serif; font-size:.95rem; color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .field .hint{font-size:.78rem; color:#8A93A2; margin-top:4px;}
+  .field.slider-row{display:flex; align-items:center; gap:14px;}
+  .field.slider-row input[type=range]{flex:1; accent-color:var(--gold);}
+  .field.slider-row .pct-out{min-width:52px; text-align:right; font-weight:600; color:var(--petroleo);}
+
+  .results{background:var(--cream); border-radius:8px; padding:18px 20px; align-self:start;}
+  .results .result-block{padding:9px 0; border-bottom:1px dashed var(--line);}
+  .results .result-block:last-child{border-bottom:none;}
+  .results .result-block .row{display:flex; justify-content:space-between; font-size:.9rem;}
+  .results .result-block .row.total{font-weight:700; color:var(--petroleo); font-size:.98rem;}
+  .results .result-block .v{font-weight:600;}
+  .results .result-block .v.good{color:var(--ok);}
+  .results .result-block .v.bad{color:var(--danger);}
+  .formula{
+    font-size:.72rem; color:#8A93A2; margin-top:3px;
+    font-style:italic;
+  }
+  .formula b{color:#6B7686; font-style:normal; font-weight:600;}
+
+  .note{
+    font-size:.82rem; color:#6B7686; background:var(--gold-soft);
+    border-left:3px solid var(--gold); padding:10px 14px; border-radius:0 6px 6px 0; margin-top:14px;
+  }
+
+  .expense-list .exp-row{display:flex; gap:10px; align-items:center; margin-bottom:8px;}
+  .expense-list .exp-row label{flex:1; font-size:.85rem; margin:0;}
+  .expense-list .exp-row input{width:130px;}
+  .subtotal-line{display:flex; justify-content:space-between; padding-top:8px; margin-top:8px; border-top:1px solid var(--line); font-weight:600; font-size:.9rem; color:var(--petroleo);}
+
+  .regime-compare{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:760px){.regime-compare{grid-template-columns:1fr;}}
+  .regime-card{background:var(--cream); border-radius:8px; padding:16px; border:2px solid transparent;}
+  .regime-card.winner{border-color:var(--gold);}
+  .regime-card h3{font-size:.95rem; margin-bottom:10px;}
+  .regime-card .row{display:flex; justify-content:space-between; font-size:.85rem; padding:5px 0;}
+  .regime-card .row .v{font-weight:600;}
+
+  .pe-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:760px){.pe-grid{grid-template-columns:1fr;}}
+  .pe-card{background:var(--cream); border-radius:8px; padding:18px;}
+  .pe-card h3{font-size:.95rem; margin-bottom:4px;}
+  .pe-card .sub{font-size:.78rem; color:#6B7686; margin-bottom:12px;}
+  .pe-card .big{font-family:Georgia,serif; font-size:2rem; color:var(--petroleo); font-weight:700;}
+
+  footer{text-align:center; padding:30px 20px 10px; color:#8A93A2; font-size:.82rem;}
+  footer strong{color:var(--petroleo);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Percursos da vida financeira do Psicanalista</div>
+    <h1>Meu Consultório em Números</h1>
+    <p>Preencha os passos abaixo com os números do seu consultório. Cada campo atualiza o painel de resultado automaticamente. Sob cada resultado, a fórmula usada aparece em itálico, para você acompanhar a conta.</p>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="summary-grid">
+    <div class="cell"><div class="label">Sessões projetadas / mês</div><div class="value" id="s-sessoes">0</div></div>
+    <div class="cell"><div class="label">Receita bruta / mês</div><div class="value" id="s-receita">R$ 0</div></div>
+    <div class="cell"><div class="label">Resultado líquido / mês</div><div class="value" id="s-resultado">R$ 0</div></div>
+    <div class="cell highlight"><div class="label">Pró-labore disponível / mês</div><div class="value" id="s-prolabore">R$ 0</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- PASSO 1 -->
+  <section class="step">
+    <div class="step-head"><span class="num">1</span><h2>Agenda e capacidade de atendimento</h2></div>
+    <div class="step-body">
+      <div>
+        <div class="field"><label>Horas disponíveis por dia de atendimento</label><input type="number" id="horasDia" value="6" min="1" max="12" step="0.5"></div>
+        <div class="field"><label>Dias de atendimento por semana</label><input type="number" id="diasSemana" value="5" min="1" max="7"></div>
+        <div class="field"><label>Semanas de recesso no ano (férias, feriados, recesso)</label><input type="number" id="semanasRecesso" value="7" min="0" max="20"></div>
+        <div class="field slider-row"><label style="flex:0 0 auto;min-width:180px;">Taxa de ocupação real da agenda</label><input type="range" id="ocupacao" min="10" max="100" value="70"><span class="pct-out" id="ocupacaoOut">70%</span></div>
+      </div>
+      <div class="results">
+        <div class="result-block">
+          <div class="row"><span>Sessões possíveis / semana</span><span class="v" id="r-sess-semana">0</span></div>
+          <div class="formula">Fórmula: <b>Horas por dia × Dias por semana</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Semanas efetivas de trabalho / ano</span><span class="v" id="r-semanas-ef">0</span></div>
+          <div class="formula">Fórmula: <b>52 − Semanas de recesso</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Sessões possíveis / mês</span><span class="v" id="r-sess-mes-max">0</span></div>
+          <div class="formula">Fórmula: <b>(Sessões/semana × Semanas efetivas) ÷ 12</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row total"><span>Sessões projetadas / mês</span><span class="v" id="r-sess-mes">0</span></div>
+          <div class="formula">Fórmula: <b>Sessões possíveis/mês × Taxa de ocupação</b></div>
+        </div>
+        <div class="note">Este é o número real de trabalho, não a capacidade máxima teórica. Use uma taxa de ocupação prudente, nunca 100%.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO 2 -->
+  <section class="step">
+    <div class="step-head"><span class="num">2</span><h2>Despesas do consultório</h2></div>
+    <div class="step-body">
+      <div class="expense-list">
+        <strong style="font-size:.85rem;color:var(--petroleo);">Despesas fixas mensais</strong>
+        <div class="exp-row"><label>Aluguel de sala</label><input type="number" class="fixa" value="0"></div>
+        <div class="exp-row"><label>Contabilidade</label><input type="number" class="fixa" value="0"></div>
+        <div class="exp-row"><label>Supervisão clínica</label><input type="number" class="fixa" value="0"></div>
+        <div class="exp-row"><label>Plataforma / prontuário</label><input type="number" class="fixa" value="0"></div>
+        <div class="exp-row"><label>Seguro / conselho de classe</label><input type="number" class="fixa" value="0"></div>
+        <div class="subtotal-line"><span>Total fixas</span><span id="totalFixas">R$ 0</span></div>
+        <strong style="font-size:.85rem;color:var(--petroleo); display:block; margin-top:14px;">Despesas variáveis (média mensal)</strong>
+        <div class="exp-row"><label>Formação continuada</label><input type="number" class="variavel" value="0"></div>
+        <div class="exp-row"><label>Marketing e divulgação</label><input type="number" class="variavel" value="0"></div>
+        <div class="exp-row"><label>Materiais e outras</label><input type="number" class="variavel" value="0"></div>
+        <div class="subtotal-line"><span>Total variáveis</span><span id="totalVariaveis">R$ 0</span></div>
+      </div>
+      <div class="results">
+        <div class="result-block">
+          <div class="row"><span>Total despesas fixas</span><span class="v" id="rf-fixas">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Soma dos itens de despesa fixa</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Total despesas variáveis</span><span class="v" id="rf-var">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Soma dos itens de despesa variável</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row total"><span>Despesas totais do consultório</span><span class="v" id="r-despesas-total">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Despesas fixas + Despesas variáveis</b></div>
+        </div>
+        <div class="note">A análise pessoal e a psicoterapia pessoal entram no orçamento da vida pessoal, não aqui — mantenha consultório e vida pessoal separados.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO 3 -->
+  <section class="step">
+    <div class="step-head"><span class="num">3</span><h2>Precificação da sessão</h2></div>
+    <div class="step-body">
+      <div>
+        <div class="field"><label>Valor de mercado praticado por pares (pesquisa)</label><input type="number" id="valorMercado" value="0"></div>
+        <div class="field"><label>Valor de tabela que você está definindo para a sessão</label><input type="number" id="valorTabela" value="0"></div>
+      </div>
+      <div class="results">
+        <div class="result-block">
+          <div class="row"><span>Valor mínimo da sessão (piso de custo)</span><span class="v" id="r-piso">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Despesas totais ÷ Sessões projetadas/mês</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row total"><span>Margem sobre o piso de custo</span><span class="v" id="r-margem">0%</span></div>
+          <div class="formula">Fórmula: <b>(Valor de tabela − Piso) ÷ Piso</b></div>
+        </div>
+        <div class="note" id="r-cobre-piso">Preencha o valor de tabela para verificar.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO 4 -->
+  <section class="step">
+    <div class="step-head"><span class="num">4</span><h2>Receita bruta projetada</h2></div>
+    <div class="step-body">
+      <div>
+        <div class="field slider-row"><label style="flex:0 0 auto;min-width:180px;">% de pacientes no valor cheio</label><input type="range" id="pctCheio" min="0" max="100" value="60"><span class="pct-out" id="pctCheioOut">60%</span></div>
+        <div class="field"><label>Valor social / reduzido médio praticado</label><input type="number" id="valorSocial" value="0"></div>
+        <div class="field slider-row"><label style="flex:0 0 auto;min-width:180px;">Taxa de faltas não cobradas</label><input type="range" id="taxaFalta" min="0" max="30" value="5"><span class="pct-out" id="taxaFaltaOut">5%</span></div>
+      </div>
+      <div class="results">
+        <div class="result-block">
+          <div class="row"><span>Valor médio efetivo da sessão</span><span class="v" id="r-valor-medio">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>% valor cheio × Valor tabela + % valor social × Valor social</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row total"><span>Receita bruta mensal projetada</span><span class="v" id="r-receita-mensal">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Sessões projetadas × Valor médio efetivo × (1 − Taxa de faltas)</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Receita bruta anual projetada</span><span class="v" id="r-receita-anual">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita bruta mensal × 12</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO 5 -->
+  <section class="step">
+    <div class="step-head"><span class="num">5</span><h2>Comparação de regime tributário</h2></div>
+    <div class="step-body" style="grid-template-columns:1fr;">
+      <div class="note" style="margin-top:0;">O INSS funciona de um jeito diferente em cada regime, e essa diferença muda o valor do benefício futuro — não só o quanto sai do bolso hoje. Por isso ele aparece separado dos outros impostos.</div>
+
+      <div class="regime-compare" style="margin-top:16px;">
+        <div class="regime-card" id="cardCarne">
+          <h3>Carnê-leão (pessoa física)</h3>
+          <div class="field" style="margin-bottom:12px;">
+            <label>Plano de contribuição do INSS</label>
+            <select id="planoINSS">
+              <option value="normal">Plano Normal — 20%</option>
+              <option value="simplificado">Plano Simplificado — 11%</option>
+            </select>
+          </div>
+          <div class="field" id="baseContribuicaoWrap" style="margin-bottom:12px;">
+            <label>Base de contribuição declarada</label>
+            <input type="number" id="baseContribuicao" value="1621" min="1621" max="8475.55" step="1">
+            <div class="hint">Entre o salário mínimo (R$ 1.621,00) e o teto do INSS (R$ 8.475,55) em 2026.</div>
+          </div>
+          <div class="row"><span>INSS do mês <span class="badge" id="cl-inss-badge">conta tempo</span></span><span class="v" id="cl-inss">R$ 0</span></div>
+          <div class="formula" id="cl-inss-formula">Fórmula: <b>Base declarada × 20%</b></div>
+          <div class="row" style="margin-top:10px;"><span>Base de cálculo do IR</span><span class="v" id="cl-base">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita − Despesas − INSS</b></div>
+          <div class="row" style="margin-top:8px;"><span>IR devido no mês</span><span class="v" id="cl-ir">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>IR pela tabela progressiva − redutor da Lei 15.270/2025</b><br>(isento até R$ 5.000; redução parcial até R$ 7.350)</div>
+          <div class="row" style="margin-top:8px;"><span>Resultado líquido</span><span class="v" id="cl-liquido">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita − Despesas − INSS − IR</b></div>
+        </div>
+        <div class="regime-card" id="cardPJ">
+          <h3>PJ — Simples Nacional</h3>
+          <div class="field" style="margin-bottom:12px;"><label>Pró-labore mensal definido</label><input type="number" id="prolaborePJ" value="0"></div>
+          <div class="row"><span>Fator R</span><span class="v" id="pj-fatorr">0%</span></div>
+          <div class="formula">Fórmula: <b>(Pró-labore × 12) ÷ RBT12</b> — ≥28% usa Anexo III, senão Anexo V</div>
+          <div class="row" style="margin-top:8px;"><span>Anexo aplicável</span><span class="v" id="pj-anexo">—</span></div>
+          <div class="row" style="margin-top:8px;"><span>DAS devido no mês</span><span class="v" id="pj-das">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita × Alíquota efetiva</b>, onde Alíquota efetiva = (RBT12 × alíquota nominal − parcela a deduzir) ÷ RBT12</div>
+          <div class="row" style="margin-top:10px;"><span>INSS sobre pró-labore <span class="badge">conta tempo</span></span><span class="v" id="pj-inss">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>mín(Pró-labore, Teto INSS R$ 8.475,55) × 11%</b> — patronal já incluso no DAS (Anexos III e V)</div>
+          <div class="row" style="margin-top:8px;"><span>Resultado líquido (após pró-labore)</span><span class="v" id="pj-liquido">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita − Despesas − Pró-labore − DAS − INSS sobre pró-labore</b></div>
+        </div>
+      </div>
+      <div class="note">
+        No carnê-leão, o Plano Simplificado (11%) custa menos por mês, mas só garante aposentadoria por idade — não conta como tempo de contribuição. O Plano Normal (20%, sobre a base que você declarar) conta tempo de contribuição, como o INSS sobre pró-labore na PJ, cuja parte patronal já vem inclusa no DAS. Essa é a principal troca entre "pagar menos agora" e "manter o direito pleno de aposentadoria".
+      </div>
+      <div class="note">RBT12 estimado como a receita anual projetada (passo 4 × 12). Tabela do Simples Nacional vigente desde 2018 (Anexos III e V); salário mínimo e teto do INSS de 2026. Confirme com a contadora antes de decidir — valores mudam por lei todo ano.</div>
+    </div>
+  </section>
+
+  <!-- PASSO 6-7 -->
+  <section class="step">
+    <div class="step-head"><span class="num">6-7</span><h2>DRE, pró-labore e reservas</h2></div>
+    <div class="step-body">
+      <div>
+        <div class="field">
+          <label>Regime usado no resultado final</label>
+          <select id="regimeEscolhido"><option value="carne">Carnê-leão</option><option value="pj">PJ Simples Nacional</option></select>
+        </div>
+        <div class="field slider-row"><label style="flex:0 0 auto;min-width:200px;">% retido no consultório (não retirado)</label><input type="range" id="pctRetido" min="0" max="60" value="20"><span class="pct-out" id="pctRetidoOut">20%</span></div>
+        <div class="field slider-row"><label style="flex:0 0 auto;min-width:200px;">% do pró-labore reservado p/ férias e 13º</label><input type="range" id="pctFeriasDecimo" min="0" max="30" value="17"><span class="pct-out" id="pctFeriasDecimoOut">17%</span></div>
+        <div class="field"><label>Custo de vida pessoal mensal (para reserva de emergência)</label><input type="number" id="custoVida" value="0"></div>
+      </div>
+      <div class="results">
+        <div class="result-block">
+          <div class="row"><span>Resultado antes de impostos</span><span class="v" id="dre-antes">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Receita − Despesas</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row total"><span>Resultado líquido do consultório</span><span class="v" id="dre-liquido">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Resultado antes de impostos − Imposto do regime escolhido</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Pró-labore sugerido (bruto)</span><span class="v" id="dre-prolabore">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Resultado líquido × (1 − % retido)</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>(−) Reserva para férias e 13º</span><span class="v" id="dre-reserva-feriasdecimo">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Pró-labore sugerido × % reservado para férias e 13º</b><br>Autônomo não tem 13º nem férias remuneradas automáticas — este valor simula essa reserva mês a mês.</div>
+        </div>
+        <div class="result-block">
+          <div class="row total" style="color:var(--gold);"><span>Pró-labore disponível para gastar</span><span class="v" id="dre-prolabore-disp">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Pró-labore sugerido − Reserva para férias e 13º</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Reserva de emergência alvo (6 meses)</span><span class="v" id="dre-reserva-emerg">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Custo de vida pessoal × 6</b></div>
+        </div>
+        <div class="result-block">
+          <div class="row"><span>Reserva técnica do consultório (2 meses)</span><span class="v" id="dre-reserva-tec">R$ 0</span></div>
+          <div class="formula">Fórmula: <b>Despesas fixas × 2</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO 8 -->
+  <section class="step">
+    <div class="step-head"><span class="num">8</span><h2>Ponto de equilíbrio</h2></div>
+    <div class="step-body" style="grid-template-columns:1fr;">
+      <div class="field" style="max-width:340px;">
+        <label>Meta de retirada líquida desejada por mês (o que você quer ter disponível para gastar)</label>
+        <input type="number" id="metaProlabore" value="0">
+      </div>
+      <div class="pe-grid">
+        <div class="pe-card">
+          <h3>PE operacional</h3>
+          <div class="sub">Sessões só para cobrir as despesas do consultório, antes de imposto e pró-labore.</div>
+          <div class="big" id="pe1-sessoes">0</div>
+          <div class="formula" style="margin-top:8px;">Fórmula: <b>Despesas totais ÷ (Valor médio efetivo × (1 − Taxa de faltas))</b></div>
+        </div>
+        <div class="pe-card">
+          <h3>PE completo</h3>
+          <div class="sub">Sessões para cobrir despesas + imposto do regime escolhido + a meta de retirada líquida acima.</div>
+          <div class="big" id="pe2-sessoes">0</div>
+          <div class="formula" style="margin-top:8px;">Fórmula: <b>maior número de sessões tal que Receita − Despesas − Imposto(regime) = Meta de retirada</b><br>Calculado por aproximação, pois o imposto muda conforme a receita.</div>
+        </div>
+      </div>
+      <div class="note">Abaixo do PE operacional, o consultório opera no vermelho antes mesmo do imposto. Abaixo do PE completo, você cobre as contas mas não atinge a retirada que definiu como meta.</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Ferramenta de estudo do curso <strong>Percursos da vida financeira do Psicanalista</strong> — SBPRJ · Na Conta da Silze<br>
+  Não substitui orientação contábil individual. Verifique as tabelas de imposto vigentes com sua contadora.
+</footer>
+
+<script>
+function fmtR(v){ if(!isFinite(v)) v=0; return "R$ " + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtN(v){ if(!isFinite(v)) v=0; return v.toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}); }
+function fmtPct(v){ if(!isFinite(v)) v=0; return (v*100).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}) + "%"; }
+function num(id){ return parseFloat(document.getElementById(id).value) || 0; }
+function sumClass(cls){ let t=0; document.querySelectorAll("."+cls).forEach(el=>{ t += parseFloat(el.value)||0; }); return t; }
+
+// referências INSS 2026
+const SALARIO_MINIMO = 1621.00;
+const TETO_INSS = 8475.55;
+
+function inssCarneLeao(plano, baseDeclarada){
+  if(plano === "simplificado") return SALARIO_MINIMO*0.11;
+  const base = Math.min(Math.max(baseDeclarada, SALARIO_MINIMO), TETO_INSS);
+  return base*0.20;
+}
+function inssProlaboreCalc(prolabore){
+  return Math.min(Math.max(prolabore,0), TETO_INSS)*0.11;
+}
+
+// tabela IR 2026 (Lei 15.270/2025)
+function irCarneLeao(base){
+  let irBruto;
+  if(base<=2259.20) irBruto = 0;
+  else if(base<=2826.65) irBruto = base*0.075-169.44;
+  else if(base<=3751.05) irBruto = base*0.15-381.44;
+  else if(base<=4664.68) irBruto = base*0.225-662.77;
+  else irBruto = base*0.275-896;
+  irBruto = Math.max(irBruto,0);
+  let redutor;
+  if(base<=5000) redutor = irBruto;
+  else if(base<=7350) redutor = 978.62 - 0.133145*base;
+  else redutor = 0;
+  return Math.max(irBruto - redutor, 0);
+}
+
+const anexoIII = [
+  {lo:0, aliq:0.06, ded:0}, {lo:180000.01, aliq:0.112, ded:9360}, {lo:360000.01, aliq:0.135, ded:17640},
+  {lo:720000.01, aliq:0.16, ded:35640}, {lo:1800000.01, aliq:0.21, ded:125640}, {lo:3600000.01, aliq:0.33, ded:648000},
+];
+const anexoV = [
+  {lo:0, aliq:0.155, ded:0}, {lo:180000.01, aliq:0.18, ded:4500}, {lo:360000.01, aliq:0.195, ded:9900},
+  {lo:720000.01, aliq:0.205, ded:17100}, {lo:1800000.01, aliq:0.23, ded:62100}, {lo:3600000.01, aliq:0.305, ded:540000},
+];
+function faixaSimples(rbt12, tabela){ let faixa = tabela[0]; for(const f of tabela){ if(rbt12>=f.lo) faixa=f; } return faixa; }
+
+function dasParaReceita(receitaMensal, prolaboreAssumido){
+  const rbt12 = receitaMensal*12;
+  const fatorR = rbt12>0 ? (prolaboreAssumido*12)/rbt12 : 0;
+  const anexo = fatorR>=0.28 ? "III" : "V";
+  const tabela = anexo==="III" ? anexoIII : anexoV;
+  const faixa = faixaSimples(rbt12, tabela);
+  const aliqEf = rbt12>0 ? Math.max((rbt12*faixa.aliq-faixa.ded)/rbt12,0) : 0;
+  return receitaMensal*aliqEf;
+}
+
+// imposto total do regime (saída de caixa referente a imposto/contribuição, sem contar despesas do consultório)
+function impostoRegime(regime, receitaMensal, despesasTotal, inss, prolaboreAssumido){
+  if(regime==="carne"){
+    const base = Math.max(receitaMensal-despesasTotal-inss,0);
+    const ir = irCarneLeao(base);
+    return inss+ir;
+  } else {
+    return dasParaReceita(receitaMensal, prolaboreAssumido);
+  }
+}
+
+function solveSessions(fn, lo, hi){
+  // fn deve ser crescente em S; procura a raiz de fn(S)=0
+  if(fn(hi) < 0) return hi; // nem no teto cobre a meta
+  for(let i=0;i<60;i++){
+    const mid = (lo+hi)/2;
+    if(fn(mid) < 0) lo = mid; else hi = mid;
+  }
+  return (lo+hi)/2;
+}
+
+function compute(){
+  // Passo 1
+  const horasDia = num("horasDia"), diasSemana = num("diasSemana"), semanasRecesso = num("semanasRecesso");
+  const ocupacao = num("ocupacao")/100;
+  document.getElementById("ocupacaoOut").textContent = (ocupacao*100).toFixed(0)+"%";
+  const sessSemana = horasDia*diasSemana;
+  const semanasEf = 52-semanasRecesso;
+  const sessMesMax = (sessSemana*semanasEf)/12;
+  const sessMes = sessMesMax*ocupacao;
+  document.getElementById("r-sess-semana").textContent = fmtN(sessSemana);
+  document.getElementById("r-semanas-ef").textContent = fmtN(semanasEf);
+  document.getElementById("r-sess-mes-max").textContent = fmtN(sessMesMax);
+  document.getElementById("r-sess-mes").textContent = fmtN(sessMes);
+
+  // Passo 2
+  const totalFixas = sumClass("fixa");
+  const totalVar = sumClass("variavel");
+  const despesasTotal = totalFixas+totalVar;
+  document.getElementById("rf-fixas").textContent = fmtR(totalFixas);
+  document.getElementById("rf-var").textContent = fmtR(totalVar);
+  document.getElementById("totalFixas").textContent = fmtR(totalFixas);
+  document.getElementById("totalVariaveis").textContent = fmtR(totalVar);
+  document.getElementById("r-despesas-total").textContent = fmtR(despesasTotal);
+
+  // Passo 3
+  const piso = sessMes>0 ? despesasTotal/sessMes : 0;
+  const valorTabela = num("valorTabela");
+  const margem = piso>0 ? (valorTabela-piso)/piso : 0;
+  document.getElementById("r-piso").textContent = fmtR(piso);
+  document.getElementById("r-margem").textContent = fmtPct(margem);
+  const cobreEl = document.getElementById("r-cobre-piso");
+  if(valorTabela>0){
+    cobreEl.textContent = valorTabela>=piso ? "O valor de tabela cobre o piso de custo." : "Atenção: o valor de tabela está abaixo do piso de custo.";
+  }
+
+  // Passo 4
+  const pctCheio = num("pctCheio")/100;
+  document.getElementById("pctCheioOut").textContent = (pctCheio*100).toFixed(0)+"%";
+  const valorSocial = num("valorSocial");
+  const taxaFalta = num("taxaFalta")/100;
+  document.getElementById("taxaFaltaOut").textContent = (taxaFalta*100).toFixed(0)+"%";
+  const valorMedio = pctCheio*valorTabela + (1-pctCheio)*valorSocial;
+  const receitaMensal = sessMes*valorMedio*(1-taxaFalta);
+  const receitaAnual = receitaMensal*12;
+  document.getElementById("r-valor-medio").textContent = fmtR(valorMedio);
+  document.getElementById("r-receita-mensal").textContent = fmtR(receitaMensal);
+  document.getElementById("r-receita-anual").textContent = fmtR(receitaAnual);
+
+  // Passo 5 - Carne-leao
+  const planoINSS = document.getElementById("planoINSS").value;
+  const baseContribWrap = document.getElementById("baseContribuicaoWrap");
+  baseContribWrap.style.display = planoINSS === "simplificado" ? "none" : "block";
+  const baseContrib = num("baseContribuicao");
+  const inss = inssCarneLeao(planoINSS, baseContrib);
+  document.getElementById("cl-inss").textContent = fmtR(inss);
+  document.getElementById("cl-inss-badge").textContent = planoINSS === "simplificado" ? "não conta tempo" : "conta tempo";
+  document.getElementById("cl-inss-formula").innerHTML = planoINSS === "simplificado"
+    ? "Fórmula: <b>1 salário mínimo (R$ 1.621,00) × 11%</b> — fixo, não depende da receita"
+    : "Fórmula: <b>Base declarada × 20%</b>";
+  const baseIR = Math.max(receitaMensal-despesasTotal-inss,0);
+  const ir = irCarneLeao(baseIR);
+  const liquidoCarne = receitaMensal-despesasTotal-inss-ir;
+  document.getElementById("cl-base").textContent = fmtR(baseIR);
+  document.getElementById("cl-ir").textContent = fmtR(ir);
+  document.getElementById("cl-liquido").textContent = fmtR(liquidoCarne);
+
+  // Passo 5 - PJ
+  const prolaboreP = num("prolaborePJ");
+  const rbt12 = receitaAnual;
+  const fatorR = rbt12>0 ? (prolaboreP*12)/rbt12 : 0;
+  const anexo = fatorR>=0.28 ? "III" : "V";
+  const das = dasParaReceita(receitaMensal, prolaboreP);
+  const inssProlabore = inssProlaboreCalc(prolaboreP);
+  const liquidoPJ = receitaMensal-despesasTotal-prolaboreP-das-inssProlabore;
+  document.getElementById("pj-fatorr").textContent = fmtPct(fatorR);
+  document.getElementById("pj-anexo").textContent = anexo;
+  document.getElementById("pj-das").textContent = fmtR(das);
+  document.getElementById("pj-inss").textContent = fmtR(inssProlabore);
+  document.getElementById("pj-liquido").textContent = fmtR(liquidoPJ);
+  document.getElementById("cardCarne").classList.toggle("winner", liquidoCarne>=liquidoPJ);
+  document.getElementById("cardPJ").classList.toggle("winner", liquidoPJ>liquidoCarne);
+
+  // Passo 6-7
+  const regime = document.getElementById("regimeEscolhido").value;
+  const antesImposto = receitaMensal-despesasTotal;
+  const impostoEscolhido = regime==="carne" ? (inss+ir) : das;
+  const liquidoConsultorio = antesImposto - impostoEscolhido;
+  document.getElementById("dre-antes").textContent = fmtR(antesImposto);
+  document.getElementById("dre-liquido").textContent = fmtR(liquidoConsultorio);
+
+  const pctRetido = num("pctRetido")/100;
+  document.getElementById("pctRetidoOut").textContent = (pctRetido*100).toFixed(0)+"%";
+  const prolaboreSugerido = liquidoConsultorio*(1-pctRetido);
+  document.getElementById("dre-prolabore").textContent = fmtR(prolaboreSugerido);
+
+  const pctFeriasDecimo = num("pctFeriasDecimo")/100;
+  document.getElementById("pctFeriasDecimoOut").textContent = (pctFeriasDecimo*100).toFixed(0)+"%";
+  const reservaFeriasDecimo = prolaboreSugerido*pctFeriasDecimo;
+  const prolaboreDisponivel = prolaboreSugerido - reservaFeriasDecimo;
+  document.getElementById("dre-reserva-feriasdecimo").textContent = fmtR(reservaFeriasDecimo);
+  document.getElementById("dre-prolabore-disp").textContent = fmtR(prolaboreDisponivel);
+
+  const custoVida = num("custoVida");
+  document.getElementById("dre-reserva-emerg").textContent = fmtR(custoVida*6);
+  document.getElementById("dre-reserva-tec").textContent = fmtR(totalFixas*2);
+
+  // Passo 8 - PE1 operacional
+  const denomPE1 = valorMedio*(1-taxaFalta);
+  const pe1 = denomPE1>0 ? despesasTotal/denomPE1 : 0;
+  document.getElementById("pe1-sessoes").textContent = fmtN(pe1);
+
+  // Passo 8 - PE2 completo (despesas + imposto + meta de retirada)
+  const metaProlabore = num("metaProlabore");
+  let pe2 = 0;
+  if(denomPE1>0){
+    const fn = (S)=>{
+      const rec = S*denomPE1;
+      const imp = impostoRegime(regime, rec, despesasTotal, inss, regime==="pj" ? prolaboreP : 0);
+      return rec - despesasTotal - imp - metaProlabore;
+    };
+    pe2 = solveSessions(fn, 0, 1000);
+  }
+  document.getElementById("pe2-sessoes").textContent = fmtN(pe2);
+
+  // resumo topo
+  document.getElementById("s-sessoes").textContent = fmtN(sessMes);
+  document.getElementById("s-receita").textContent = fmtR(receitaMensal);
+  document.getElementById("s-resultado").textContent = fmtR(liquidoConsultorio);
+  document.getElementById("s-prolabore").textContent = fmtR(prolaboreDisponivel);
+}
+
+document.querySelectorAll("input, select").forEach(el=>{
+  el.addEventListener("input", compute);
+  el.addEventListener("change", compute);
+});
+compute();
+</script>
+
+</body>
+</html>
