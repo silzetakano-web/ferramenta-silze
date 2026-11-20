@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de PGBL · Silze Takano</title>
+<meta name="description" content="Simulação gratuita: veja quanto aplicar no PGBL para chegar à dedução máxima do Imposto de Renda e quanto isso pode reduzir o seu imposto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+:root{--creme:#FBF8EF;--marinho:#404D5D;--dourado:#C3963E;--dourado-escuro:#946B22;--apoio:#4F5B69;--branco:#FFFFFF;--linha:#E8E2D0;--ok:#2E7D6F;--crit:#B9534D}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.obrig{color:var(--crit);margin-left:2px}
+.legenda-obrig{font-size:13px;color:var(--apoio);margin:0}
+.resumo-erros{background:#F7E6E4;color:#8E3A35;border-radius:10px;padding:12px 14px;font-weight:600;font-size:14px}
+.resumo-erros:empty{display:none}
+.linkbtn-c{background:none;border:0;padding:0;min-height:0;font:inherit;font-size:14px;font-weight:600;color:var(--dourado-escuro);text-decoration:underline;cursor:pointer;margin-left:6px}
+
+.convite{background:var(--branco);border:1px solid var(--dourado);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px;color:var(--marinho)}
+.convite .botao-convite{align-self:flex-start;background:var(--marinho);color:var(--creme);text-decoration:none;font-weight:600;border-radius:999px;padding:14px 26px;min-height:48px;display:inline-flex;align-items:center}
+.corrigir{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:14px}
+.corrigir .campo{flex:1 1 220px}
+
+body{margin:0;background:var(--creme);color:var(--marinho);font-family:Montserrat,Arial,sans-serif;font-weight:500;font-size:16px;line-height:1.55}
+a{color:var(--dourado-escuro)}
+.topo{background:var(--marinho);color:var(--creme);border-bottom:3px solid var(--dourado)}
+.topo div{max-width:760px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.marca{font-weight:700;letter-spacing:.16em;font-size:15px;color:var(--dourado)}
+.marca small{display:block;font-weight:500;letter-spacing:.04em;font-size:12px;color:var(--creme);opacity:.85}
+.topo span{font-size:13px;opacity:.9}
+main{max-width:760px;margin:0 auto;padding:36px 20px 24px;display:flex;flex-direction:column;gap:24px}
+.rotulo{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--dourado-escuro);margin:0}
+h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.15;font-weight:600;margin:8px 0 12px}
+h2{font-size:1.35rem;line-height:1.25;font-weight:600;margin:0 0 6px}
+.apoio{color:var(--apoio)}
+.cartao{background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:24px}
+.pergunta{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-bottom:1px solid var(--linha)}
+.pergunta:last-of-type{border-bottom:0}
+.pergunta p{margin:0;font-weight:600}
+.opcoes{display:flex;gap:10px;flex-wrap:wrap}
+.opcoes label{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #B9B3A3;border-radius:999px;padding:10px 18px;cursor:pointer;min-height:44px;font-weight:600}
+.opcoes input{accent-color:var(--marinho);width:18px;height:18px;margin:0}
+.opcoes label:has(input:checked){border-color:var(--marinho);background:var(--creme)}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font-size:14px;font-weight:600}
+.campo input{font:inherit;font-size:16px;padding:12px 14px;border:1px solid #B9B3A3;border-radius:10px;background:var(--creme);color:var(--marinho);min-height:48px}
+.dinheiro{display:flex;align-items:center;border:1px solid #B9B3A3;border-radius:10px;background:var(--creme);max-width:360px}
+.dinheiro span{padding-left:14px;color:var(--apoio)}
+.dinheiro input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:22px;font-weight:600;color:var(--marinho);padding:12px 14px 12px 8px}
+.dinheiro:focus-within{outline:2px solid var(--dourado-escuro);outline-offset:1px}
+.dinheiro input:focus{outline:none}
+.dica{font-size:13px;color:var(--apoio);margin:6px 0 0}
+.erro{font-size:13px;color:var(--crit);font-weight:600}
+.erro:empty{display:none}
+button{font:inherit;font-weight:600;font-size:16px;border-radius:999px;padding:14px 26px;cursor:pointer;min-height:48px;border:1.5px solid var(--marinho);background:var(--marinho);color:var(--creme);align-self:flex-start}
+button:hover{background:#2F3A47}
+button:disabled{opacity:.6;cursor:wait}
+:focus-visible{outline:2px solid var(--dourado-escuro);outline-offset:2px}
+.destaque{background:var(--marinho);color:var(--creme);border:0}
+.destaque .rotulo{color:var(--dourado)}
+.valor{font-size:clamp(2.2rem,8vw,3.2rem);font-weight:700;line-height:1.1;margin:6px 0}
+.destaque .apoio{color:rgba(251,248,239,.85)}
+.aviso-nao{border-left:4px solid var(--dourado);background:#FBF2DD}
+form{display:flex;flex-direction:column;gap:14px}
+.aceite{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;font-size:13px;color:var(--apoio);cursor:pointer}
+.aceite input{width:20px;height:20px;margin-top:2px;accent-color:var(--marinho)}
+.escondido{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.numeros{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.numeros>div{padding:14px 12px 14px 0}
+.numeros .k{font-size:13px;color:var(--apoio)}
+.numeros .v{font-size:22px;font-weight:700;margin-top:2px}
+.numeros .v.bom{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--linha);white-space:nowrap}
+@media (max-width:520px){.barra{display:none!important}}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--apoio);font-weight:600}
+tr.max td{font-weight:700}
+.barra{display:inline-block;height:8px;border-radius:4px;background:var(--dourado);vertical-align:middle;margin-right:8px}
+ul.avisos{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.status{font-weight:600;margin:0}
+.rodape{max-width:760px;margin:24px auto 0;padding:20px 20px 40px;border-top:1px solid var(--linha);font-size:13px;color:var(--apoio);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header class="topo"><div><div class="marca">SILZE TAKANO<small>Inteligência Financeira</small></div><span>Simulação gratuita</span></div></header>
+
+<main>
+  <header>
+    <p class="rotulo">Imposto de Renda</p>
+    <h1>Calculadora de PGBL</h1>
+    <p class="apoio" style="margin:0">Veja quanto aplicar no PGBL, a previdência privada que pode ser abatida do Imposto de Renda, para chegar à dedução máxima de 12% da sua renda. E quanto isso pode reduzir o seu imposto.</p>
+  </header>
+
+  <!-- Etapa 1: perguntas -->
+  <section class="cartao" id="etapa1" aria-labelledby="t1">
+    <h2 id="t1">Primeiro, duas perguntas</h2>
+    <div class="pergunta" role="radiogroup" aria-labelledby="p1">
+      <p id="p1">Você faz a declaração completa do Imposto de Renda?</p>
+      <div class="opcoes"><label><input type="radio" name="completa" value="sim">Sim</label><label><input type="radio" name="completa" value="nao">Não</label><label><input type="radio" name="completa" value="naosei">Não sei</label></div>
+    </div>
+    <div class="pergunta" role="radiogroup" aria-labelledby="p2">
+      <p id="p2">Você contribui para o INSS ou para outro regime oficial de previdência?</p>
+      <div class="opcoes"><label><input type="radio" name="inss" value="sim">Sim</label><label><input type="radio" name="inss" value="nao">Não</label></div>
+    </div>
+    <span class="erro" id="e1"></span>
+    <button type="button" id="seguir1" style="margin-top:8px">Continuar</button>
+  </section>
+
+  <section class="cartao aviso-nao" id="naoServe" hidden>
+    <h2 id="naoTitulo"></h2>
+    <p id="naoTexto" style="margin:0 0 12px"></p>
+    <p style="margin:0">Enquanto isso, que tal ver como está a sua vida financeira como um todo? <a href="https://ferramentas.silzetakano.com.br/roda.html?origem=pgbl">Faça a Roda da Vida Financeira</a>, é gratuita.</p>
+  </section>
+
+  <!-- Etapa 2: renda -->
+  <section class="cartao" id="etapa2" hidden aria-labelledby="t2">
+    <h2 id="t2">Qual é a sua renda bruta tributável no ano?</h2>
+    <div class="campo" style="margin-top:10px">
+      <label for="renda" class="escondido">Renda bruta tributável no ano</label>
+      <div class="dinheiro"><span>R$</span><input id="renda" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <p class="dica">Some salários, pró-labore, aluguéis e outros rendimentos tributáveis do ano. Não inclua 13º salário nem PLR. Se souber só o salário bruto mensal, multiplique por 12.</p>
+      <span class="erro" id="e2"></span>
+    </div>
+    <button type="button" id="calcular" style="margin-top:14px">Calcular</button>
+  </section>
+
+  <!-- Valor principal -->
+  <section class="cartao destaque" id="principal" hidden aria-live="polite">
+    <p class="rotulo">Para chegar à dedução máxima</p>
+    <div class="valor" id="vMax">R$ 0,00</div>
+    <p class="apoio" style="margin:0">é quanto aplicar no PGBL até 31/12, o equivalente a 12% da sua renda bruta tributável.</p>
+  </section>
+
+  <!-- Cadastro -->
+  <section class="cartao" id="etapaCadastro" hidden aria-labelledby="t3">
+    <h2 id="t3">Veja quanto isso reduz o seu imposto</h2>
+    <p class="apoio" style="margin:0 0 6px">Deixe seu contato para ver a economia estimada, a tabela completa e os cuidados antes de aplicar. Você também recebe a simulação por e-mail.</p>
+    <form id="cadastro" novalidate>
+      <p class="legenda-obrig">Todos os campos com <span class="obrig">*</span> são obrigatórios.</p>
+      <div class="resumo-erros" id="resumoErros" role="alert"></div>
+      <div class="campo"><label for="fNome">Nome<span class="obrig" aria-hidden="true">*</span></label><input id="fNome" aria-required="true" type="text" autocomplete="name" maxlength="60" required><span class="erro" id="eNome"></span></div>
+      <div class="campo"><label for="fEmail">E-mail<span class="obrig" aria-hidden="true">*</span></label><input id="fEmail" aria-required="true" type="email" autocomplete="email" inputmode="email" maxlength="80" required><span class="erro" id="eEmail"></span></div>
+      <div class="campo"><label for="fZap">WhatsApp<span class="obrig" aria-hidden="true">*</span></label><input id="fZap" aria-required="true" type="tel" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" maxlength="16" required><span class="erro" id="eZap"></span></div>
+      <div class="escondido" aria-hidden="true"><label for="fSite">Site</label><input id="fSite" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="aceite" for="fOk"><input id="fOk" type="checkbox" required><span>Autorizo a Silze Takano Inteligência Financeira a guardar meus dados e a minha simulação para me enviar o resultado e entrar em contato comigo. Posso pedir a exclusão a qualquer momento. <a href="privacidade.html" target="_blank" rel="noopener">Política de privacidade</a></span></label>
+      <span class="erro" id="eOk"></span>
+      <button type="submit" id="verResultado">Ver o resultado completo</button>
+    </form>
+  </section>
+
+  <!-- Resultado completo -->
+  <section id="resultado" hidden style="display:flex;flex-direction:column;gap:24px">
+    <div class="cartao">
+      <h2>Sua simulação</h2>
+      <div class="numeros" style="margin-top:12px">
+        <div><div class="k">Renda bruta tributável</div><div class="v" id="vRenda"></div></div>
+        <div><div class="k">Aplicação no PGBL (12%)</div><div class="v" id="vContrib"></div></div>
+        <div><div class="k">Economia estimada no imposto</div><div class="v bom" id="vEco"></div></div>
+        <div><div class="k">Sua faixa do IR</div><div class="v" id="vFaixa"></div></div>
+      </div>
+      <p class="status" id="status" aria-live="polite" style="margin-top:14px"></p>
+      <button type="button" id="abrirCorrecao" style="background:none;border:0;color:var(--dourado-escuro);text-decoration:underline;padding:0;min-height:0;font-size:14px;margin-top:8px">E-mail errado? Corrigir e reenviar</button>
+      <div class="corrigir" id="caixaCorrecao" hidden>
+        <div class="campo"><label for="cEmail">E-mail para receber<span class="obrig" aria-hidden="true">*</span></label><input id="cEmail" type="email" inputmode="email" autocomplete="email" maxlength="80" aria-required="true"><span class="erro" id="ecEmail"></span></div>
+        <button type="button" id="reenviar" style="align-self:flex-end">Reenviar</button>
+      </div>
+    </div>
+    <div class="convite" id="convite" hidden>
+      <p class="rotulo">Quer ir além?</p>
+      <h2>Imposto é só uma parte do seu dinheiro.</h2>
+      <p class="apoio" style="margin:0">Eu ajudo mulheres a reconstruírem a sua relação com o dinheiro, com mentoria individual, acompanhamento e o app GPS Financeiro. Conheça o meu trabalho e veja qual caminho faz sentido para você.</p>
+      <a class="botao-convite" href="https://www.silzetakano.com.br/?origem=pgbl">Conhecer o trabalho da Silze</a>
+      <p class="apoio" id="contagem" aria-live="polite" style="margin:0;font-size:14px"></p>
+    </div>
+    <div class="cartao">
+      <h2>A economia conforme o quanto você aplica</h2>
+      <p class="apoio" style="margin:0 0 10px">Aplicar menos que 12% também reduz o imposto.</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>%</th><th>Aplicação</th><th>Economia</th></tr></thead><tbody id="tabela"></tbody></table></div>
+    </div>
+    <div class="cartao">
+      <h2>Antes de aplicar</h2>
+      <ul class="avisos">
+        <li>O PGBL só reduz o imposto no <b>modelo completo</b> da declaração. No simplificado não há benefício.</li>
+        <li>É <b>adiamento, não isenção</b>: o imposto é pago no resgate, pela tabela progressiva ou pela regressiva, escolhida na contratação.</li>
+        <li>A aplicação precisa ser feita até <b>31/12</b> para valer na declaração do ano.</li>
+        <li>Esta é uma estimativa: ela não considera outras deduções (dependentes, saúde, educação, INSS), que mudam o seu imposto.</li>
+      </ul>
+      <p class="apoio" style="margin:16px 0 0">Simulação educativa, não é recomendação de investimento. Para decidir, converse com uma profissional de sua confiança.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape"><span id="revisao"></span><span><a href="https://www.instagram.com/silzetakano/">Instagram @silzetakano</a> · <a href="https://www.silzetakano.com.br">silzetakano.com.br</a> · <a href="privacidade.html">Privacidade</a></span></footer>
+
+<script>
+/* ===== Configuração ===== */
+var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9AjnsybjKIK9PiS8HWP6sQ3YrPKJgFvqm_PFKcf5YzT66yMRFH1IHu6f1tOQ/exec';
+
+/* Tabela do IR para a declaração de 2027 (ano-calendário 2026). Revisar todo ano. */
+var IR = {
+  revisao: '20/11/2026',
+  anoCalendario: 2026,
+  limitePgbl: 0.12,
+  faixas: [ /* [até, alíquota, parcela a deduzir] base anual */
+    [29145.60, 0, 0],
+    [33919.80, 0.075, 2185.92],
+    [45012.60, 0.15, 4729.91],
+    [55976.16, 0.225, 8105.85],
+    [Infinity, 0.275, 10904.66]
+  ],
+  /* Redução anual (Lei 15.270/2025) sobre os rendimentos tributáveis */
+  reducao: function (renda) {
+    if (renda <= 60000) return 2694.15;
+    if (renda <= 88200) return Math.max(0, 8429.73 - 0.095575 * renda);
+    return 0;
+  }
+};
+
+(function(){
+  var $=function(s){return document.getElementById(s)};
+  var origem=(new URLSearchParams(location.search).get('origem')||'direto').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60)||'direto';
+  var brl=function(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
+  var lerNum=function(s){var n=parseFloat(String(s).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'));return isFinite(n)&&n>0?n:0};
+  var faixaDe=function(b){for(var i=0;i<IR.faixas.length;i++)if(b<=IR.faixas[i][0])return IR.faixas[i];return IR.faixas[IR.faixas.length-1]};
+  var imposto=function(b){var f=faixaDe(b);return Math.max(0,b*f[1]-f[2])};
+  var devido=function(base,renda){return Math.max(0,imposto(base)-IR.reducao(renda))};
+  var economia=function(renda,c){return devido(renda,renda)-devido(Math.max(0,renda-c),renda)};
+  var renda=0, cadastro=null, enviado=false;
+
+  $('revisao').textContent='Tabela do IR do ano-calendário '+IR.anoCalendario+', revisada em '+IR.revisao+'.';
+
+  /* Etapa 1 */
+  $('seguir1').addEventListener('click',function(){
+    var c=document.querySelector('input[name=completa]:checked'),i=document.querySelector('input[name=inss]:checked');
+    if(!c||!i){$('e1').textContent='Responda as duas perguntas para continuar.';return}
+    $('e1').textContent='';
+    if(c.value==='nao'||i.value==='nao'){
+      $('naoTitulo').textContent='Neste caso, o PGBL não reduz o seu imposto';
+      $('naoTexto').textContent=c.value==='nao'
+        ?'O desconto do PGBL só existe para quem faz a declaração completa. No modelo simplificado, o valor aplicado não abate nada do imposto.'
+        :'Para abater o PGBL do imposto, é preciso contribuir também para o INSS ou para outro regime oficial de previdência.';
+      $('naoServe').hidden=false;$('etapa2').hidden=true;$('principal').hidden=true;$('etapaCadastro').hidden=true;return;
+    }
+    $('naoServe').hidden=true;
+    if(c.value==='naosei'){$('naoTitulo').textContent='Uma dica antes de seguir';$('naoTexto').textContent='Em geral, a declaração completa vale a pena para quem tem muitas despesas dedutíveis, como saúde, educação, dependentes e o próprio PGBL. A simulação abaixo considera a declaração completa.';$('naoServe').hidden=false}
+    $('etapa2').hidden=false;$('renda').focus();
+  });
+
+  /* Etapa 2 */
+  $('renda').addEventListener('blur',function(){var v=lerNum(this.value);if(v)this.value=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})});
+  $('renda').addEventListener('keydown',function(e){if(e.key==='Enter')$('calcular').click()});
+  $('calcular').addEventListener('click',function(){
+    renda=lerNum($('renda').value);
+    if(!renda){$('e2').textContent='Informe a sua renda do ano, por exemplo 180.000,00.';return}
+    $('e2').textContent='';
+    $('vMax').textContent=brl(renda*IR.limitePgbl);$('principal').hidden=false;
+    enviado=false;
+    if(cadastro){mostrarResultado();enviar()}else{$('etapaCadastro').hidden=false}
+    $('principal').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  /* Cadastro */
+  var digitos=function(t){return t.replace(/\D/g,'')};
+  $('fZap').addEventListener('input',function(e){var d=digitos(e.target.value).slice(0,11),o=d;if(d.length>2)o='('+d.slice(0,2)+') '+d.slice(2);if(d.length>6)o='('+d.slice(0,2)+') '+d.slice(2,d.length-4)+'-'+d.slice(-4);e.target.value=o});
+  $('cadastro').addEventListener('submit',function(e){e.preventDefault();
+    var nome=$('fNome').value.trim(),email=$('fEmail').value.trim(),zap=digitos($('fZap').value),ok=$('fOk').checked;
+    var erros={eNome:nome.length<2?'Informe seu nome.':'',eEmail:/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)?'':'Informe um e-mail válido, como nome@exemplo.com.',eZap:/^[1-9]{2}9\d{8}$/.test(zap)?'':'Informe o celular com DDD e o 9 na frente, como (21) 99999-9999.',eOk:ok?'':'Marque a autorização para continuar.'};
+    var mapa={eNome:'fNome',eEmail:'fEmail',eZap:'fZap',eOk:'fOk'},primeiro=null;
+    for(var k in erros){$(k).textContent=erros[k];$(mapa[k]).setAttribute('aria-invalid',erros[k]?'true':'false');if(erros[k]&&!primeiro)primeiro=mapa[k]}
+    var qtd=Object.keys(erros).filter(function(k){return erros[k]}).length;$('resumoErros').textContent=qtd?(qtd>1?'Faltam '+qtd+' informações. Confira os campos destacados em vermelho.':'Falta uma informação. Confira o campo destacado em vermelho.'):'';
+    if(primeiro){$('resumoErros').scrollIntoView({block:'center',behavior:'smooth'});$(primeiro).focus({preventScroll:true});return}
+    cadastro={nome:nome,email:email,whatsapp:zap,aceite:new Date().toISOString(),site_url:$('fSite').value};
+    $('etapaCadastro').hidden=true;mostrarResultado();enviar();
+    $('resultado').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  /* Resultado */
+  function calcula(){var c=renda*IR.limitePgbl;return {contribuicao:c,economia:economia(renda,c),aliquota:faixaDe(renda)[1]}}
+  function mostrarResultado(){
+    var r=calcula();
+    $('vRenda').textContent=brl(renda);$('vContrib').textContent=brl(r.contribuicao);$('vEco').textContent=brl(r.economia);
+    $('vFaixa').textContent=r.aliquota?(r.aliquota*100).toLocaleString('pt-BR')+'%':'Isenta';
+    var max=r.economia||1,linhas='';
+    for(var p=0;p<=12;p+=2){var c=renda*p/100,e=economia(renda,c);
+      linhas+='<tr'+(p===12?' class="max"':'')+'><td>'+p+'%</td><td>'+brl(c)+'</td><td><span class="barra" style="width:'+Math.round(80*e/max)+'px"></span>'+brl(e)+'</td></tr>'}
+    $('tabela').innerHTML=linhas;
+    if(r.economia<1){$('status').textContent='Pela tabela do IR, a sua renda já fica isenta ou quase isenta. Neste caso, o PGBL praticamente não reduz o imposto.'}
+    $('resultado').hidden=false;
+  }
+
+
+  /* ----- Depois do envio: leva ao site da Silze ----- */
+  var timerSite=null;
+  function irParaSite(){
+    var link=document.querySelector('#convite .botao-convite'),n=8;
+    $('contagem').innerHTML='Você será levada ao site em <b id="seg">'+n+'</b> segundos. <button type="button" id="ficar" class="linkbtn-c">Ficar nesta página</button>';
+    $('ficar').addEventListener('click',function(){clearInterval(timerSite);$('contagem').textContent='Tudo bem, você continua aqui.'});
+    clearInterval(timerSite);
+    timerSite=setInterval(function(){n--;var e=$('seg');if(e)e.textContent=n;if(n<=0){clearInterval(timerSite);location.href=link.href}},1000);
+  }
+  /* Envio para a planilha */
+  function enviar(){
+    if(!cadastro||enviado)return;
+    var r=calcula();
+    var dados={ferramenta:'pgbl',origem:origem,nome:cadastro.nome,email:cadastro.email,whatsapp:cadastro.whatsapp,aceite:cadastro.aceite,site_url:cadastro.site_url,
+      pgbl:{renda:Math.round(renda*100)/100,contribuicao:Math.round(r.contribuicao*100)/100,economia:Math.round(r.economia*100)/100,aliquota:r.aliquota,revisao:IR.revisao}};
+    if(ENDERECO_PLANILHA.indexOf('http')!==0){$('status').textContent='Página em teste: o envio ainda não está ligado à planilha.';return}
+    $('status').textContent='Enviando a simulação para o seu e-mail…';
+    fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
+      .then(function(){enviado=true;$('status').textContent='Pronto! A simulação está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false;irParaSite()})
+      .catch(function(){$('status').textContent='Não conseguimos enviar o e-mail agora, mas o seu resultado está aqui na tela.'});
+  }
+  $('abrirCorrecao').addEventListener('click',function(){$('caixaCorrecao').hidden=false;$('cEmail').value=cadastro?cadastro.email:'';$('cEmail').focus()});
+  $('reenviar').addEventListener('click',function(){
+    var em=$('cEmail').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(em)){$('ecEmail').textContent='Confira o e-mail, como nome@exemplo.com.';$('cEmail').setAttribute('aria-invalid','true');$('cEmail').focus();return}
+    $('ecEmail').textContent='';$('cEmail').setAttribute('aria-invalid','false');
+    cadastro.email=em;enviado=false;$('caixaCorrecao').hidden=true;enviar();
+  });
+})();
+</script>
+</body>
+</html>
