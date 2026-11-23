@@ -174,7 +174,6 @@ ul.avisos{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;ga
       <h2>Imposto é só uma parte do seu dinheiro.</h2>
       <p class="apoio" style="margin:0">Eu ajudo mulheres a reconstruírem a sua relação com o dinheiro, com mentoria individual, acompanhamento e o app GPS Financeiro. Conheça o meu trabalho e veja qual caminho faz sentido para você.</p>
       <a class="botao-convite" href="https://www.silzetakano.com.br/?origem=pgbl">Conhecer o trabalho da Silze</a>
-      <p class="apoio" id="contagem" aria-live="polite" style="margin:0;font-size:14px"></p>
     </div>
     <div class="cartao">
       <h2>A economia conforme o quanto você aplica</h2>
@@ -293,15 +292,6 @@ var IR = {
   }
 
 
-  /* ----- Depois do envio: leva ao site da Silze ----- */
-  var timerSite=null;
-  function irParaSite(){
-    var link=document.querySelector('#convite .botao-convite'),n=8;
-    $('contagem').innerHTML='Você será levada ao site em <b id="seg">'+n+'</b> segundos. <button type="button" id="ficar" class="linkbtn-c">Ficar nesta página</button>';
-    $('ficar').addEventListener('click',function(){clearInterval(timerSite);$('contagem').textContent='Tudo bem, você continua aqui.'});
-    clearInterval(timerSite);
-    timerSite=setInterval(function(){n--;var e=$('seg');if(e)e.textContent=n;if(n<=0){clearInterval(timerSite);location.href=link.href}},1000);
-  }
   /* Envio para a planilha */
   function enviar(){
     if(!cadastro||enviado)return;
@@ -311,7 +301,7 @@ var IR = {
     if(ENDERECO_PLANILHA.indexOf('http')!==0){$('status').textContent='Página em teste: o envio ainda não está ligado à planilha.';return}
     $('status').textContent='Enviando a simulação para o seu e-mail…';
     fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
-      .then(function(){enviado=true;$('status').textContent='Pronto! A simulação está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false;irParaSite()})
+      .then(function(){enviado=true;$('status').textContent='Pronto! A simulação está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false})
       .catch(function(){$('status').textContent='Não conseguimos enviar o e-mail agora, mas o seu resultado está aqui na tela.'});
   }
   $('abrirCorrecao').addEventListener('click',function(){$('caixaCorrecao').hidden=false;$('cEmail').value=cadastro?cadastro.email:'';$('cEmail').focus()});

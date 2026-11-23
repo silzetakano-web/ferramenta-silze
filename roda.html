@@ -205,7 +205,6 @@ ol.perguntas{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:colum
       <h2>A sua roda é o primeiro passo.</h2>
       <p class="apoio" style="margin:0">Eu ajudo mulheres a reconstruírem a sua relação com o dinheiro, com mentoria individual, acompanhamento e o app GPS Financeiro. Conheça o meu trabalho e veja qual caminho faz sentido para você.</p>
       <a class="botao-convite" id="linkSite" href="https://www.silzetakano.com.br/?origem=roda">Conhecer o trabalho da Silze</a>
-      <p class="apoio" id="contagem" aria-live="polite" style="margin:0;font-size:14px"></p>
     </div>
 
     <p class="nota-legal">Material educativo. A Roda mostra como você percebe a sua vida financeira hoje; não é diagnóstico nem recomendação de investimento.</p>
@@ -380,15 +379,6 @@ var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9Ajnsy
   }
 
 
-  /* ----- Depois do envio: leva ao site da Silze ----- */
-  var timerSite=null;
-  function irParaSite(){
-    var link=document.querySelector('#convite .botao-convite'),n=8;
-    $('contagem').innerHTML='Você será levada ao site em <b id="seg">'+n+'</b> segundos. <button type="button" id="ficar" class="linkbtn-c">Ficar nesta página</button>';
-    $('ficar').addEventListener('click',function(){clearInterval(timerSite);$('contagem').textContent='Tudo bem, você continua aqui.'});
-    clearInterval(timerSite);
-    timerSite=setInterval(function(){n--;var e=$('seg');if(e)e.textContent=n;if(n<=0){clearInterval(timerSite);location.href=link.href}},1000);
-  }
   /* ----- Envio para a planilha ----- */
   $('enviar').addEventListener('click',function(){
     if(!cadastro)return;
@@ -404,7 +394,7 @@ var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9Ajnsy
     rodaEmImagem().then(function(png){
     if(png&&png.length<1500000)dados.imagem=png;
     return fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)});})
-      .then(function(){enviado=true;$('status').textContent='Pronto! Sua roda foi salva e o resultado está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false;$('convite').scrollIntoView({behavior:'smooth',block:'center'});irParaSite()})
+      .then(function(){enviado=true;$('status').textContent='Pronto! Sua roda foi salva e o resultado está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false;$('convite').scrollIntoView({behavior:'smooth',block:'center'})})
       .catch(function(){$('status').textContent='Não conseguimos enviar agora. Verifique a internet e tente de novo.'})
       .then(function(){b.disabled=false});
   });
