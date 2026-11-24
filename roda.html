@@ -233,6 +233,18 @@ var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9Ajnsy
   ];
   var $=function(s){return document.getElementById(s)};
   var origem=(new URLSearchParams(location.search).get('origem')||'direto').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60)||'direto';
+  var FERRAMENTA='roda';
+  /* ----- Contagem de acessos (sem dados pessoais) ----- */
+  function registrarAcesso(etapa){
+    try{
+      if(ENDERECO_PLANILHA.indexOf('http')!==0)return;
+      var chave='acesso-'+FERRAMENTA+'-'+etapa;
+      try{if(sessionStorage.getItem(chave))return;sessionStorage.setItem(chave,'1')}catch(x){}
+      fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({tipo:'acesso',ferramenta:FERRAMENTA,etapa:etapa,origem:origem})}).catch(function(){});
+    }catch(e){}
+  }
+  registrarAcesso('abriu');
+
   var vals={}; AREAS.forEach(function(a){vals[a.id]=5}); var mostrado=Object.assign({},vals), hl=null, anim=null, cadastro=null, enviado=false;
   var fmt=function(n){return n.toFixed(1).replace('.',',')};
   var faixa=function(v){return v<=4?'crit':v<=6?'meio':'ok'};
@@ -342,6 +354,7 @@ var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9Ajnsy
     var qtd=Object.keys(erros).filter(function(k){return erros[k]}).length;$('resumoErros').textContent=qtd?(qtd>1?'Faltam '+qtd+' informações. Confira os campos destacados em vermelho.':'Falta uma informação. Confira o campo destacado em vermelho.'):'';
     if(primeiro){$('resumoErros').scrollIntoView({block:'center',behavior:'smooth'});$(primeiro).focus({preventScroll:true});return}
     cadastro={nome:nome,email:email,whatsapp:zap,aceite:new Date().toISOString(),site_url:$('fSite').value};
+    registrarAcesso('cadastro');
     mostrarApp();window.scrollTo(0,0)});
   function mostrarApp(){$('entrada').hidden=true;$('app').hidden=false;$('olaTxt').textContent='Olá, '+cadastro.nome.split(' ')[0]+'.';$('cEmail').value=cadastro.email;$('cZap').value=$('fZap').value;desenhar()}
   $('trocar').addEventListener('click',function(){cadastro=null;enviado=false;$('convite').hidden=true;$('status').textContent='';$('cadastro').reset();$('app').hidden=true;$('entrada').hidden=false;$('fNome').focus()});

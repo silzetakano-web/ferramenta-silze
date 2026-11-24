@@ -222,6 +222,18 @@ var IR = {
 (function(){
   var $=function(s){return document.getElementById(s)};
   var origem=(new URLSearchParams(location.search).get('origem')||'direto').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60)||'direto';
+  var FERRAMENTA='pgbl';
+  /* ----- Contagem de acessos (sem dados pessoais) ----- */
+  function registrarAcesso(etapa){
+    try{
+      if(ENDERECO_PLANILHA.indexOf('http')!==0)return;
+      var chave='acesso-'+FERRAMENTA+'-'+etapa;
+      try{if(sessionStorage.getItem(chave))return;sessionStorage.setItem(chave,'1')}catch(x){}
+      fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({tipo:'acesso',ferramenta:FERRAMENTA,etapa:etapa,origem:origem})}).catch(function(){});
+    }catch(e){}
+  }
+  registrarAcesso('abriu');
+
   var brl=function(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
   var lerNum=function(s){var n=parseFloat(String(s).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'));return isFinite(n)&&n>0?n:0};
   var faixaDe=function(b){for(var i=0;i<IR.faixas.length;i++)if(b<=IR.faixas[i][0])return IR.faixas[i];return IR.faixas[IR.faixas.length-1]};
@@ -258,7 +270,7 @@ var IR = {
     $('e2').textContent='';
     $('vMax').textContent=brl(renda*IR.limitePgbl);$('principal').hidden=false;
     enviado=false;
-    if(cadastro){mostrarResultado();enviar()}else{$('etapaCadastro').hidden=false}
+    registrarAcesso('calculou');if(cadastro){mostrarResultado();enviar()}else{$('etapaCadastro').hidden=false}
     $('principal').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
