@@ -188,14 +188,13 @@ ol.perguntas{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:colum
 
     <div class="cartao envio" id="caixaEnvio">
       <h2 style="color:var(--creme)">Receba a sua roda por e-mail</h2>
-      <p class="apoio" style="margin:8px 0 0">Quando terminar de dar as notas, confira seus dados e clique abaixo.</p>
+      <p class="apoio" style="margin:8px 0 0">Quando terminar de dar as notas, confira seus dados e clique abaixo. A sua roda só fica salva e é enviada depois desse clique.</p>
       <div class="corrigir">
         <div class="campo"><label for="cEmail" style="color:var(--creme)">E-mail para receber<span class="obrig" aria-hidden="true">*</span></label><input id="cEmail" type="email" inputmode="email" autocomplete="email" maxlength="80" aria-required="true"><span class="erro" id="ecEmail" style="color:#FFB3AC"></span></div>
         <div class="campo"><label for="cZap" style="color:var(--creme)">WhatsApp<span class="obrig" aria-hidden="true">*</span></label><input id="cZap" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" aria-required="true"><span class="erro" id="ecZap" style="color:#FFB3AC"></span></div>
       </div>
       <div class="acoes">
         <button class="principal" type="button" id="enviar">Salvar e receber por e-mail</button>
-        <button class="secundario" type="button" id="copiar">Copiar resultado</button>
       </div>
       <p class="aviso" id="status" aria-live="polite"></p>
     </div>
@@ -410,11 +409,6 @@ var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9Ajnsy
       .then(function(){enviado=true;$('status').textContent='Pronto! Sua roda foi salva e o resultado está a caminho de '+cadastro.email+'. Se não aparecer em alguns minutos, olhe a caixa de spam.';$('convite').hidden=false;$('convite').scrollIntoView({behavior:'smooth',block:'center'})})
       .catch(function(){$('status').textContent='Não conseguimos enviar agora. Verifique a internet e tente de novo.'})
       .then(function(){b.disabled=false});
-  });
-  $('copiar').addEventListener('click',function(){
-    var t='Roda da Vida Financeira'+(cadastro?' de '+cadastro.nome:'')+' · '+new Date().toLocaleDateString('pt-BR')+'\n'+AREAS.map(function(a){return '• '+a.nome+': '+vals[a.id]}).join('\n')+'\nMédia geral: '+fmt(media(vals));
-    var ok=function(){$('status').textContent='Resultado copiado. Cole onde quiser guardar.'};
-    try{navigator.clipboard.writeText(t).then(ok,function(){$('status').textContent='Não foi possível copiar neste navegador.'})}catch(e){$('status').textContent='Não foi possível copiar neste navegador.'}
   });
 
   atualizarValores();desenhar();analisar();
