@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Curso Dívidas em Ordem ao Vivo · Lista de espera · Silze Takano</title>
+<meta name="description" content="Entre na lista de espera do curso Dívidas em Ordem ao Vivo, com a Silze Takano. Turma em janeiro.">
+<meta property="og:image" content="https://www.silzetakano.com.br/assets/capa-dividas-em-ordem.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --creme:#FBF8EF; --marinho:#404D5D; --dourado:#C3963E; --dourado-escuro:#946B22; --apoio:#4F5B69;
+  --branco:#FFFFFF; --linha:#E8E2D0; --anel:#EFEADB;
+  --ok:#2E7D6F; --meio:#C3963E; --crit:#B9534D;
+  --ok-suave:#E3F0EE; --meio-suave:#FBF2DD; --crit-suave:#F7E6E4;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.obrig{color:var(--crit);margin-left:2px}
+.legenda-obrig{font-size:13px;color:var(--apoio);margin:0}
+.resumo-erros{background:#F7E6E4;color:#8E3A35;border-radius:10px;padding:12px 14px;font-weight:600;font-size:14px}
+.resumo-erros:empty{display:none}
+.linkbtn-c{background:none;border:0;padding:0;min-height:0;font:inherit;font-size:14px;font-weight:600;color:var(--dourado-escuro);text-decoration:underline;cursor:pointer;margin-left:6px}
+
+.convite{background:var(--branco);border:1px solid var(--dourado);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px;color:var(--marinho)}
+.convite .botao-convite{align-self:flex-start;background:var(--marinho);color:var(--creme);text-decoration:none;font-weight:600;border-radius:999px;padding:14px 26px;min-height:48px;display:inline-flex;align-items:center}
+.corrigir{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:14px}
+.corrigir .campo{flex:1 1 220px}
+.envio .campo input{background:var(--branco)}
+
+body{margin:0;background:var(--creme);color:var(--marinho);font-family:Montserrat,Arial,sans-serif;font-weight:500;font-size:16px;line-height:1.55}
+a{color:var(--dourado-escuro)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+.topo{background:var(--marinho);color:var(--creme);border-bottom:3px solid var(--dourado)}
+.topo .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px}
+.marca{font-weight:700;letter-spacing:.16em;font-size:15px;color:var(--dourado)}
+.marca small{display:block;font-weight:500;letter-spacing:.04em;font-size:12px;color:var(--creme);opacity:.85}
+.topo span{font-size:13px;opacity:.9}
+.rotulo{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--dourado-escuro);margin:0}
+h1{font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.15;font-weight:600;margin:8px 0 14px}
+h2{font-size:1.5rem;line-height:1.25;font-weight:600;margin:0}
+h3{font-size:1.1rem;font-weight:600;margin:0}
+.apoio{color:var(--apoio)}
+.cartao{background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:24px;min-width:0}
+
+/* Entrada */
+.entrada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:40px;align-items:start;padding-block:48px 32px}
+@media (max-width:860px){.entrada{grid-template-columns:1fr;gap:24px;padding-block:32px 16px}}
+.areas{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.areas li{font-size:13px;font-weight:600;background:var(--branco);border:1px solid var(--linha);border-radius:999px;padding:5px 12px}
+form{display:flex;flex-direction:column;gap:14px;border-top:3px solid var(--dourado)}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font-size:14px;font-weight:600}
+.campo input{font:inherit;font-size:16px;padding:12px 14px;border:1px solid #B9B3A3;border-radius:10px;background:var(--creme);color:var(--marinho);min-height:48px}
+.campo input[aria-invalid=true]{border-color:var(--crit)}
+.erro{font-size:13px;color:var(--crit);font-weight:600}
+.erro:empty{display:none}
+.aceite{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;font-size:13px;line-height:1.5;color:var(--apoio);cursor:pointer}
+.aceite input{width:20px;height:20px;margin-top:2px;accent-color:var(--marinho)}
+.escondido{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+button,.botao{font:inherit;font-weight:600;font-size:16px;border-radius:999px;padding:14px 26px;cursor:pointer;min-height:48px;border:1.5px solid var(--marinho);display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.principal{background:var(--marinho);color:var(--creme)}
+.principal:hover{background:#2F3A47}
+.secundario{background:transparent;color:var(--marinho)}
+.secundario:hover{background:var(--branco)}
+button:disabled{opacity:.6;cursor:wait}
+:focus-visible{outline:2px solid var(--dourado-escuro);outline-offset:2px}
+.nota-legal{font-size:12px;color:var(--apoio);margin:0}
+
+.rodape{border-top:1px solid var(--linha);margin-top:48px;padding-block:24px 40px;font-size:13px;color:var(--apoio);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lista{margin:18px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.lista li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.lista li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--dourado);margin-top:9px}
+.destaque{background:var(--branco);border-left:4px solid var(--dourado);border-radius:10px;padding:14px 16px;margin-top:20px;font-size:15px}
+.apostila{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;align-items:center;margin-top:4px}
+.apostila img{width:120px;height:auto;border-radius:6px;display:block}
+@media (max-width:480px){.apostila{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="topo"><div class="wrap">
+  <div class="marca">SILZE TAKANO<small>Inteligência Financeira</small></div>
+  <span>Lista de espera do curso</span>
+</div></header>
+
+<main>
+<div class="wrap">
+  <section class="entrada" id="entrada">
+    <div>
+      <p class="rotulo">Curso online · janeiro</p>
+      <h1>Dívidas em Ordem ao Vivo</h1>
+      <p class="apoio">O passo a passo para organizar e negociar as suas dívidas, agora com a Silze ao seu lado. O curso abre em janeiro, o mês das faturas de fim de ano, do IPVA, do IPTU e do material escolar. Entre na lista de espera para ser avisada primeiro quando as inscrições abrirem.</p>
+      <ul class="lista">
+        <li><span>Aulas curtas, uma por módulo, com exercícios que usam os seus números.</span></li>
+        <li><span>Encontros ao vivo para aplicar o método, com casos resolvidos na tela.</span></li>
+        <li><span>Ninguém precisa se expor: câmera desligada e dúvidas por escrito.</span></li>
+        <li><span>Modelos de carta prontos para negociar com o banco pelos canais oficiais.</span></li>
+      </ul>
+    </div>
+    <form class="cartao" id="cadastro" novalidate>
+      <h2>Entrar na lista de espera</h2>
+      <p class="apoio" style="margin:-6px 0 0;font-size:14px">Sem compromisso. Você só recebe o aviso quando as inscrições abrirem.</p>
+      <p class="legenda-obrig">Todos os campos com <span class="obrig">*</span> são obrigatórios.</p>
+      <div class="resumo-erros" id="resumoErros" role="alert"></div>
+      <div class="campo"><label for="fNome">Nome<span class="obrig" aria-hidden="true">*</span></label><input id="fNome" aria-required="true" type="text" autocomplete="name" maxlength="60" required><span class="erro" id="eNome"></span></div>
+      <div class="campo"><label for="fEmail">E-mail<span class="obrig" aria-hidden="true">*</span></label><input id="fEmail" aria-required="true" type="email" autocomplete="email" inputmode="email" maxlength="80" required><span class="erro" id="eEmail"></span></div>
+      <div class="campo"><label for="fZap">WhatsApp<span class="obrig" aria-hidden="true">*</span></label><input id="fZap" aria-required="true" type="tel" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" maxlength="16" required><span class="erro" id="eZap"></span></div>
+      <div class="escondido" aria-hidden="true"><label for="fSite">Site</label><input id="fSite" type="text" tabindex="-1" autocomplete="off"></div>
+      <label class="aceite" for="fOk"><input id="fOk" type="checkbox" required><span>Autorizo a Silze Takano Inteligência Financeira a guardar meus dados para me avisar sobre o curso e entrar em contato comigo. Posso pedir a exclusão a qualquer momento. <a href="privacidade.html" target="_blank" rel="noopener">Política de privacidade</a></span></label>
+      <span class="erro" id="eOk"></span>
+      <button class="principal" type="submit" id="enviar">Quero entrar na lista</button>
+      <p class="aviso" id="status" aria-live="polite" style="margin:0"></p>
+    </form>
+  </section>
+
+  <section class="convite" id="convite" hidden style="margin-top:48px">
+    <p class="rotulo">Pronto!</p>
+    <h2 id="obrigadoTitulo">Você está na lista de espera.</h2>
+    <p class="apoio" id="obrigadoTexto" style="margin:0">Mandei uma confirmação para o seu e-mail. Assim que as inscrições abrirem, você fica sabendo antes de todo mundo.</p>
+    <div class="apostila">
+      <img src="https://www.silzetakano.com.br/assets/capa-dividas-em-ordem-600.jpg" alt="Capa da apostila Dívidas em Ordem">
+      <div>
+        <h3>Quer começar agora?</h3>
+        <p class="apoio" style="margin:6px 0 12px">A apostila Dívidas em Ordem já está disponível: o passo a passo para organizar e negociar suas dívidas, com modelos de carta prontos.</p>
+        <a class="botao principal" href="https://pay.hotmart.com/V108642246N?checkoutMode=10&amp;src=lista-curso" target="_blank" rel="noopener">Quero a apostila</a>
+      </div>
+    </div>
+    <a href="https://www.silzetakano.com.br/?origem=lista-curso" style="font-weight:600">Conhecer o trabalho da Silze</a>
+  </section>
+
+  <p class="nota-legal" style="margin-top:32px">Material educativo. Não é recomendação de crédito nem aconselhamento jurídico.</p>
+  <footer class="rodape"><span>Silze Takano · ST Inteligência Financeira Ltda.</span><a href="privacidade.html">Política de privacidade</a></footer>
+</div>
+</main>
+
+<script>
+var ENDERECO_PLANILHA = 'https://script.google.com/macros/s/AKfycbxTXi2bvz9AjnsybjKIK9PiS8HWP6sQ3YrPKJgFvqm_PFKcf5YzT66yMRFH1IHu6f1tOQ/exec';
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var origem=(new URLSearchParams(location.search).get('origem')||'direto').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60)||'direto';
+  var FERRAMENTA='curso';
+
+  /* ----- Contagem de acessos (sem dados pessoais) ----- */
+  function registrarAcesso(etapa){
+    try{
+      var chave='acesso-'+FERRAMENTA+'-'+etapa;
+      try{if(sessionStorage.getItem(chave))return;sessionStorage.setItem(chave,'1')}catch(x){}
+      fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({tipo:'acesso',ferramenta:FERRAMENTA,etapa:etapa,origem:origem})}).catch(function(){});
+    }catch(e){}
+  }
+  registrarAcesso('abriu');
+
+  var digitos=function(t){return t.replace(/\D/g,'')};
+  $('fZap').addEventListener('input',function(e){var d=digitos(e.target.value).slice(0,11),o=d;if(d.length>2)o='('+d.slice(0,2)+') '+d.slice(2);if(d.length>6)o='('+d.slice(0,2)+') '+d.slice(2,d.length-4)+'-'+d.slice(-4);e.target.value=o});
+
+  $('cadastro').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var nome=$('fNome').value.trim(),email=$('fEmail').value.trim(),zap=digitos($('fZap').value),ok=$('fOk').checked;
+    var erros={eNome:nome.length<2?'Informe seu nome.':'',eEmail:/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)?'':'Informe um e-mail válido, como nome@exemplo.com.',eZap:/^[1-9]{2}9\d{8}$/.test(zap)?'':'Informe o celular com DDD e o 9 na frente, como (21) 99999-9999.',eOk:ok?'':'Marque a autorização para continuar.'};
+    var mapa={eNome:'fNome',eEmail:'fEmail',eZap:'fZap',eOk:'fOk'},primeiro=null;
+    for(var k in erros){$(k).textContent=erros[k];$(mapa[k]).setAttribute('aria-invalid',erros[k]?'true':'false');if(erros[k]&&!primeiro)primeiro=mapa[k]}
+    var qtd=Object.keys(erros).filter(function(k){return erros[k]}).length;
+    $('resumoErros').textContent=qtd?(qtd>1?'Faltam '+qtd+' informações. Confira os campos destacados em vermelho.':'Falta uma informação. Confira o campo destacado em vermelho.'):'';
+    if(primeiro){$('resumoErros').scrollIntoView({block:'center',behavior:'smooth'});$(primeiro).focus({preventScroll:true});return}
+    var b=$('enviar');b.disabled=true;$('status').textContent='Enviando...';
+    var dados={ferramenta:'curso',origem:origem,nome:nome,email:email,whatsapp:zap,aceite:new Date().toISOString(),site_url:$('fSite').value};
+    fetch(ENDERECO_PLANILHA,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
+      .then(function(){$('status').textContent='';$('entrada').hidden=true;$('convite').hidden=false;window.scrollTo(0,0)})
+      .catch(function(){b.disabled=false;$('status').textContent='Não conseguimos enviar agora. Verifique a internet e tente de novo.'});
+  });
+})();
+</script>
+</body>
+</html>
